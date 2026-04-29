@@ -1,0 +1,49 @@
+name: Development CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/triumph-healthms
+  
+jobs:
+  deploy-qa:
+    name: Deploy to QA (Manual Trigger)
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy to CloudClusters QA
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.QA_SERVER_HOST }}
+          username: ${{ secrets.QA_SERVER_USER }}
+          password: ${{ secrets.QA_SERVER_PASSWORD }}
+          port: ${{ secrets.QA_SERVER_PORT }}
+          script: |
+            # Pull the latest Docker image (build from CI pipeline)
+            docker pull ${{ env.DOCKER_IMAGE }}:latest
+            
+            # Stop and remove existing container if it exists
+            docker stop triumph-healthms-qa || true
+            docker rm triumph-healthms-qa || true
+            
+            # Run the new container with env vars
+            docker run -d \
+              --name triumph-healthms-qa \
+              --restart unless-stopped \
+              -p 8080:80 \
+              -e ASPNETCORE_ENVIRONMENT=Stagging \
+              -e "ConnectionStrings__DefaultConnection=${{ secrets.QA_DB_CONNECTION_STRING }}" \
+              -e "ConnectionStrings__Redis=${{ secrets.QA_REDIS_CONNECTION_STRING }}" \
+              -e "RabbitMQ__HostName=${{ secrets.QA_RABBITMQ_HOST }}" \
+              -e "RabbitMQ__UserName=${{ secrets.QA_RABBITMQ_USERNAME }}" \
+              -e "RabbitMQ__Password=${{ secrets.QA_RABBITMQ_PASSWORD }}" \
+              -e "AuthServer__Authority=${{ secrets.QA_AUTH_SERVER_URL }}" \
+              -e "AuthServer__ClientId=${{ secrets.QA_AUTH_SERVER_CLIENT_ID }}" \
+              -e "AuthServer__ClientSecret=${{ secrets.QA_AUTH_SERVER_CLIENT_SECRET }}" \
+              -e "AuthServer__Scope=${{ secrets.QA_AUTH_SERVER_SCOPE }}" \
+              -e "Sentry__Dsn=${{ secrets.QA_SENTRY_DSN }}" \
+              ${{ env.DOCKER_IMAGE }}:latest
+      
