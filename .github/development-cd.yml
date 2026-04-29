@@ -1,8 +1,7 @@
 name: Development CD Pipeline
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 env:
   DOTNET_VERSION: "10.0.x"
@@ -34,7 +33,7 @@ jobs:
               --name triumph-healthms-qa \
               --restart unless-stopped \
               -p 8080:80 \
-              -e ASPNETCORE_ENVIRONMENT=Stagging \
+              -e ASPNETCORE_ENVIRONMENT=Staging \
               -e "ConnectionStrings__DefaultConnection=${{ secrets.QA_DB_CONNECTION_STRING }}" \
               -e "ConnectionStrings__Redis=${{ secrets.QA_REDIS_CONNECTION_STRING }}" \
               -e "RabbitMQ__HostName=${{ secrets.QA_RABBITMQ_HOST }}" \
@@ -46,4 +45,3 @@ jobs:
               -e "AuthServer__Scope=${{ secrets.QA_AUTH_SERVER_SCOPE }}" \
               -e "Sentry__Dsn=${{ secrets.QA_SENTRY_DSN }}" \
               ${{ env.DOCKER_IMAGE }}:latest
-      
