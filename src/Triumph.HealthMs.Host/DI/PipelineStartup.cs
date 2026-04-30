@@ -4,6 +4,11 @@ public static class PipelineStartup
 {
     public static WebApplication AddPipelines(this WebApplication app)
     {
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
+        });
+        
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
@@ -27,7 +32,6 @@ public static class PipelineStartup
     
     static void SetupScalarDocumentation(WebApplication app)
     {
-        // Use default OpenAPI mapping
         app.MapOpenApi();
 
         app.MapScalarApiReference(options =>
@@ -37,7 +41,6 @@ public static class PipelineStartup
                 .WithTheme(ScalarTheme.Solarized)
                 .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
             
-            // Only add OAuth2 authentication if ClientId is configured
             var clientId = app.Configuration["AuthServer:ClientId"];
             if (!string.IsNullOrEmpty(clientId))
             {
