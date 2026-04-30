@@ -68,5 +68,4 @@ jobs:
           tags: |
             ${{ env.DOCKER_IMAGE }}:latest
             ${{ env.DOCKER_IMAGE }}:${{ env.SHORT_SHA }}
-          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE }}:latest
-          cache-to: type=registry,ref=${{ env.DOCKER_IMAGE }}:latest,mode=max
+          platforms: linux/amd64
