@@ -43,5 +43,9 @@ jobs:
               -e "AuthServer__ClientId=${{ secrets.QA_AUTH_SERVER_CLIENT_ID }}" \
               -e "AuthServer__ClientSecret=${{ secrets.QA_AUTH_SERVER_CLIENT_SECRET }}" \
               -e "AuthServer__Scope=${{ secrets.QA_AUTH_SERVER_SCOPE }}" \
+              -e "AuthServer__Audience=${{ secrets.QA_AUTH_SERVER_AUDIENCE }}" \
+              -e "AuthServer__AuthorizationUrl=${{ secrets.QA_AUTH_SERVER_AUTHORIZATION_URL }}" \
+              -e "AuthServer__TokenUrl=${{ secrets.QA_AUTH_SERVER_TOKEN_URL }}" \
+              -e "AuthServer__ClientId=${{ secrets.QA_AUTH_SERVER_CLIENT_ID }}" \
               -e "Sentry__Dsn=${{ secrets.QA_SENTRY_DSN }}" \
               ${{ env.DOCKER_IMAGE }}:latest
