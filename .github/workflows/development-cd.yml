@@ -13,6 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     environment: staging
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Check Docker Image
+        run: |
+          echo "Checking if Docker image ${{ env.DOCKER_IMAGE }}:latest exists..."
+          if ! docker pull ${{ env.DOCKER_IMAGE }}:latest --quiet; then
+            echo "❌ Docker image not found. Please ensure CI pipeline has completed successfully."
+            exit 1
+          else
+            echo "✅ Docker image found and pulled successfully"
+          fi
+        
       - name: Deploy to CloudClusters QA
         uses: appleboy/ssh-action@v1
         with:
@@ -21,14 +34,13 @@ jobs:
           password: ${{ secrets.QA_SERVER_PASSWORD }}
           port: ${{ secrets.QA_SERVER_PORT }}
           script: |
-            # Pull the latest Docker image (build from CI pipeline)
-            docker pull ${{ env.DOCKER_IMAGE }}:latest
-            
             # Stop and remove existing container if it exists
+            echo "Stopping existing container..."
             docker stop triumph-healthms-qa || true
             docker rm triumph-healthms-qa || true
             
             # Run the new container with env vars
+            echo "Starting new container..."
             docker run -d \
               --name triumph-healthms-qa \
               --restart unless-stopped \
@@ -46,6 +58,7 @@ jobs:
               -e "AuthServer__Audience=${{ secrets.QA_AUTH_SERVER_AUDIENCE }}" \
               -e "AuthServer__AuthorizationUrl=${{ secrets.QA_AUTH_SERVER_AUTHORIZATION_URL }}" \
               -e "AuthServer__TokenUrl=${{ secrets.QA_AUTH_SERVER_TOKEN_URL }}" \
-              -e "AuthServer__ClientId=${{ secrets.QA_AUTH_SERVER_CLIENT_ID }}" \
               -e "Sentry__Dsn=${{ secrets.QA_SENTRY_DSN }}" \
               ${{ env.DOCKER_IMAGE }}:latest
+            
+            echo "Deployment completed successfully"
