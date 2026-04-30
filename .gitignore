@@ -2,5 +2,8 @@
 .vs/
 bin/
 obj/
+logs/
+
 
 *.Development.json
+app_*
