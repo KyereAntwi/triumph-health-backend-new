@@ -34,10 +34,35 @@ jobs:
           password: ${{ secrets.QA_SERVER_PASSWORD }}
           port: ${{ secrets.QA_SERVER_PORT }}
           script: |
+            # Check what's using port 8080 and clean it up
+            echo "Checking for processes using port 8080..."
+            PORT_8080_PID=$(lsof -ti:8080 2>/dev/null || echo "")
+            if [ -n "$PORT_8080_PID" ]; then
+              echo "Found process(es) using port 8080: $PORT_8080_PID"
+              echo "Killing process(es)..."
+              kill -9 $PORT_8080_PID 2>/dev/null || true
+              sleep 2
+            fi
+            
             # Stop and remove existing container if it exists
-            echo "Stopping existing container..."
+            echo "Stopping existing triumph-healthms-qa container..."
             docker stop triumph-healthms-qa || true
             docker rm triumph-healthms-qa || true
+            
+            # Also check for any other containers that might be using port 8080
+            echo "Checking for other containers using port 8080..."
+            CONFLICTING_CONTAINERS=$(docker ps -a --filter "publish=8080" --format "{{.Names}}" 2>/dev/null || echo "")
+            if [ -n "$CONFLICTING_CONTAINERS" ]; then
+              echo "Found containers using port 8080: $CONFLICTING_CONTAINERS"
+              for container in $CONFLICTING_CONTAINERS; do
+                echo "Stopping and removing container: $container"
+                docker stop $container || true
+                docker rm $container || true
+              done
+            fi
+            
+            # Wait a moment for cleanup
+            sleep 3
             
             # Run the new container with env vars
             echo "Starting new container..."
@@ -62,3 +87,17 @@ jobs:
               ${{ env.DOCKER_IMAGE }}:latest
             
             echo "Deployment completed successfully"
+            
+            # Verify the container is running
+            echo "Verifying deployment..."
+            sleep 5
+            if docker ps | grep -q triumph-healthms-qa; then
+              echo "✅ Container triumph-healthms-qa is running successfully"
+              CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' triumph-healthms-qa 2>/dev/null || echo "unknown")
+              echo "Container IP: $CONTAINER_IP"
+            else
+              echo "❌ Container triumph-healthms-qa failed to start"
+              echo "Checking container logs:"
+              docker logs triumph-healthms-qa 2>/dev/null || echo "No logs available"
+              exit 1
+            fi
