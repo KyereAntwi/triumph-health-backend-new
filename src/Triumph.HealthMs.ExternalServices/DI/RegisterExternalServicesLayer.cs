@@ -39,7 +39,7 @@ public static class RegisterExternalServicesLayer
             config.SetKebabCaseEndpointNameFormatter();
             config.AddConsumers(typeof(RegisterExternalServicesLayer).Assembly);
             
-            var rabbitMqHost = configuration["RabbitMQ:Host"];
+            var rabbitMqHost = configuration["RabbitMQ:HostName"];
             if (string.IsNullOrEmpty(rabbitMqHost) || env == "Development")
             {
                 config.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));

@@ -1,6 +1,7 @@
 // Global using directives
 
 global using Asp.Versioning;
+global using Microsoft.AspNetCore.HttpOverrides;
 global using Microsoft.OpenApi;
 global using Scalar.AspNetCore;
 global using Serilog;
