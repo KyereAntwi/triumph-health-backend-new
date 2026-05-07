@@ -2,7 +2,7 @@ namespace Triumph.HealthMs.Core.Features.ApplicationUser.UpdateUserInfomation;
 
 public sealed class UpdateUserInformationCommandHandler(
     ILoggedInUserService loggedInUserService,
-    ITenantManagementDbContext dbContext) 
+    IApplicationUserManagementDbContext dbContext) 
     : ICommandHandler<UpdateUserInformationCommand, string>
 {
     public async Task<BaseResponse<string>> HandleAsync(UpdateUserInformationCommand command, CancellationToken cancellationToken = default)

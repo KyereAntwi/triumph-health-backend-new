@@ -2,7 +2,7 @@ namespace Triumph.HealthMs.Core.Features.ApplicationUser.AddAUserAccount;
 
 public sealed class AddAUserAccountCommandHandler(
     ILoggedInUserService loggedInUserService,
-    ITenantManagementDbContext dbContext,
+    IApplicationUserManagementDbContext dbContext,
     IPublishEndpoint  publishEndpoint,
     ILogger<AddAUserAccountCommandHandler> logger) 
     : ICommandHandler<AddAUserAccountCommand, Guid>

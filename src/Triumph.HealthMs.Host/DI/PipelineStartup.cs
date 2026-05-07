@@ -13,6 +13,7 @@ public static class PipelineStartup
         
         app.UseHttpsRedirection();
         app.UseAuthentication();
+        app.UseMiddleware<UserResourceResolverMiddleware>();
         app.UseAuthorization();
 
         var versionSet = app.NewApiVersionSet()

@@ -8,8 +8,16 @@ public static class RegisterPersistenceLayer
         
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException();
+
+        services.AddScoped<IApplicationUserManagementDbContext, ApplicationUserManagementDbContext>();
+        services.AddDbContext<ApplicationUserManagementDbContext>((serviceProvider, options) =>
+        {
+            options.UseNpgsql(connectionString)
+                .AddInterceptors(serviceProvider.GetRequiredService<AuditingInterceptor>());
+        });
         
-        services.AddDbContext<ITenantManagementDbContext, TenantManagementDbContext>((serviceProvider, options) =>
+        services.AddScoped<ITenantManagementDbContext, TenantManagementDbContext>();
+        services.AddDbContext<TenantManagementDbContext>((serviceProvider, options) =>
         {
             options.UseNpgsql(connectionString)
                 .AddInterceptors(serviceProvider.GetRequiredService<AuditingInterceptor>());
