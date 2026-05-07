@@ -9,6 +9,8 @@ public static class PipelineStartup
             ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
         });
         
+        SetupScalarDocumentation(app);
+        
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
@@ -18,14 +20,10 @@ public static class PipelineStartup
             .ReportApiVersions()
             .Build();
         
-        app.MapGroup("/api/v{version:apiVersion}")
-            .WithApiVersionSet(versionSet)
-            .WithTags("Triumph Health API")
-            .MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
-            .WithSummary("Health Check")
-            .WithDescription("Returns the health status of the API");
-
-        SetupScalarDocumentation(app);
+        var versionedGroup = app.MapGroup("/api/v{version:apiVersion}")
+            .WithApiVersionSet(versionSet);
+        
+        versionedGroup.MapCarter();
         
         return app;
     }

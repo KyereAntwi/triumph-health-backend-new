@@ -95,7 +95,13 @@ public static class ServicesStartup
         }
         
         // register layers
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddExternalServicesLayer(builder.Configuration);
+        builder.Services.AddPersistenceLayer(builder.Configuration);
+        builder.Services.AddQueryCommandHandlers();
+        builder.Services.AddCommandServices();
+
+        builder.Services.AddScoped<ILoggedInUserService, LoggedInUserService>();
 
         builder.Services.AddApiVersioning(options =>
         {
