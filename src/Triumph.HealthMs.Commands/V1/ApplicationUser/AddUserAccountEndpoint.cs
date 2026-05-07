@@ -7,7 +7,7 @@ public sealed class AddUserAccountEndpoint : ICarterModule
         app.MapPost("/accounts", Handle)
             .WithName("AddUserAccount")
             .WithDescription("Adds a new user account to the system.")
-            .WithTags("ApplicationUsers")
+            .WithTags("Application Users")
             .Produces<BaseResponse<Guid>>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError)
@@ -15,7 +15,9 @@ public sealed class AddUserAccountEndpoint : ICarterModule
             .RequireAuthorization();
     }
 
-    private static async Task<IResult> Handle([FromBody] AddAUserAccountCommand  command, [FromServices] ICommandHandler<AddAUserAccountCommand, Guid> handle)
+    private static async Task<IResult> Handle(
+        [FromBody] AddAUserAccountCommand  command, 
+        [FromServices] ICommandHandler<AddAUserAccountCommand, Guid> handle)
     {
         var result = await handle.HandleAsync(command);
         return result.ToHttpResult(

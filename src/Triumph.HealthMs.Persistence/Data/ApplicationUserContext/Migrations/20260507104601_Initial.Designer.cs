@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Triumph.HealthMs.Persistence.Data.TenantContext;
+using Triumph.HealthMs.Persistence.Data.ApplicationUserContext;
 
 #nullable disable
 
-namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
+namespace Triumph.HealthMs.Persistence.Data.ApplicationUserContext.Migrations
 {
-    [DbContext(typeof(TenantManagementDbContext))]
-    partial class TenantManagementDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationUserManagementDbContext))]
+    [Migration("20260507104601_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,7 +95,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("ApplicationUser");
+                    b.ToTable("ApplicationUsers");
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.ApplicationUser.LinkInvitation", b =>
@@ -146,7 +149,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("LinkInvitation");
+                    b.ToTable("LinkInvitations");
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.Subscription", b =>
@@ -192,7 +195,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscription");
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.Tenant", b =>
@@ -233,48 +236,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.HasIndex("UniqueIdentifier")
                         .IsUnique();
 
-                    b.ToTable("Tenants");
-                });
-
-            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantManager", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId", "ApplicationUserId");
-
-                    b.ToTable("TenantManagers");
+                    b.ToTable("Tenant");
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantSubscription", b =>
@@ -298,9 +260,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -330,7 +289,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("TenantSubscriptions");
+                    b.ToTable("TenantSubscription");
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.ApplicationUser.LinkInvitation", b =>
@@ -342,15 +301,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantManager", b =>
-                {
-                    b.HasOne("Triumph.HealthMs.Core.Models.Tenants.Tenant", "Tenant")
-                        .WithMany("TenantManagers")
-                        .HasForeignKey("TenantId");
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantSubscription", b =>
@@ -374,8 +324,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.Tenant", b =>
                 {
-                    b.Navigation("TenantManagers");
-
                     b.Navigation("TenantSubscriptions");
                 });
 #pragma warning restore 612, 618

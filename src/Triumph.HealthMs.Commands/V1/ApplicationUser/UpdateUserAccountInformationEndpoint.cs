@@ -7,6 +7,7 @@ public sealed class UpdateUserAccountInformationEndpoint : ICarterModule
         app.MapPut("/accounts", Handle)
             .WithName("UpdateUserAccountInformation")
             .WithDescription("Update the information of the currently logged in user's account")
+            .WithTags("Application Users")
             .Produces<BaseResponse<string>>(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError)

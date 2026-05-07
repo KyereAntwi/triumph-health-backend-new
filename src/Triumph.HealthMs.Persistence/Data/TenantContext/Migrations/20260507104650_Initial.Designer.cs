@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Triumph.HealthMs.Persistence.Data.TenantContext;
@@ -11,9 +12,11 @@ using Triumph.HealthMs.Persistence.Data.TenantContext;
 namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 {
     [DbContext(typeof(TenantManagementDbContext))]
-    partial class TenantManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260507104650_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -236,47 +239,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.ToTable("Tenants");
                 });
 
-            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantManager", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId", "ApplicationUserId");
-
-                    b.ToTable("TenantManagers");
-                });
-
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantSubscription", b =>
                 {
                     b.Property<Guid>("Id")
@@ -298,9 +260,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -344,15 +303,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantManager", b =>
-                {
-                    b.HasOne("Triumph.HealthMs.Core.Models.Tenants.Tenant", "Tenant")
-                        .WithMany("TenantManagers")
-                        .HasForeignKey("TenantId");
-
-                    b.Navigation("Tenant");
-                });
-
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantSubscription", b =>
                 {
                     b.HasOne("Triumph.HealthMs.Core.Models.Tenants.Subscription", "Subscription")
@@ -374,8 +324,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.Tenant", b =>
                 {
-                    b.Navigation("TenantManagers");
-
                     b.Navigation("TenantSubscriptions");
                 });
 #pragma warning restore 612, 618

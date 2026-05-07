@@ -1,11 +1,11 @@
-namespace Triumph.HealthMs.Persistence.Data;
+namespace Triumph.HealthMs.Persistence.Data.ApplicationUserContext;
 
-public class TenantManagementDbContext : DbContext, ITenantManagementDbContext
+public sealed class ApplicationUserManagementDbContext : DbContext, IApplicationUserManagementDbContext
 {
     private readonly ILoggedInUserService _loggedInUserService;
 
-    public TenantManagementDbContext(
-        DbContextOptions<TenantManagementDbContext> options, ILoggedInUserService loggedInUserService) : base(options)
+    public ApplicationUserManagementDbContext(
+        DbContextOptions<ApplicationUserManagementDbContext> options, ILoggedInUserService loggedInUserService) : base(options)
     {
         _loggedInUserService = loggedInUserService;
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
@@ -33,7 +33,7 @@ public class TenantManagementDbContext : DbContext, ITenantManagementDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TenantManagementDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationUserManagementDbContext).Assembly);
         ApplyDeletedFilter(modelBuilder);
         base.OnModelCreating(modelBuilder);
     }
@@ -47,7 +47,7 @@ public class TenantManagementDbContext : DbContext, ITenantManagementDbContext
         {
             if (!typeof(AuditableEntity).IsAssignableFrom(entityType.ClrType)) continue;
             
-            var method = typeof(TenantManagementDbContext)
+            var method = typeof(ApplicationUserManagementDbContext)
                 .GetMethod(nameof(SetDeletedFilter), BindingFlags.NonPublic | BindingFlags.Instance)!
                 .MakeGenericMethod(entityType.ClrType);
             

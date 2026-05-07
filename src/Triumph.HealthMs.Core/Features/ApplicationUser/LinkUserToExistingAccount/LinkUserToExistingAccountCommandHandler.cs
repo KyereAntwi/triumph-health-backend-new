@@ -1,7 +1,7 @@
 namespace Triumph.HealthMs.Core.Features.ApplicationUser.LinkUserToExistingAccount;
 
 public sealed class LinkUserToExistingAccountCommandHandler(
-    ITenantManagementDbContext dbContext,
+    IApplicationUserManagementDbContext dbContext,
     ILogger<LinkUserToExistingAccountCommandHandler> logger,
     ILoggedInUserService loggedInUserService,
     IPublishEndpoint publishEndpoint) 
