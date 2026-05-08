@@ -52,7 +52,12 @@ public sealed class AddTenantAccountCommandHandler(
 
         var newTenant = new Tenant
         {
-            UniqueIdentifier = GenerateTenantIdentifier()
+            Id = Guid.CreateVersion7(),
+            UniqueIdentifier = GenerateTenantIdentifier(),
+            OrganizationTitle = command.OrganizationalTitle,
+            Email = command.Email,
+            Address = command.Address,
+            MainTelephone = command.MainTelephone
         };
 
         var newTenantSubscription = new TenantSubscription
@@ -75,7 +80,7 @@ public sealed class AddTenantAccountCommandHandler(
         await dbContext.Tenants.AddAsync(newTenant, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        await PublishTenantAccountAddedEvent(newTenantSubscription.Id);
+        await PublishTenantAccountAddedEvent(newTenantSubscription.Id, newTenant.Id);
 
         return new BaseResponse<AddTenantAccountResponse>
         {
@@ -88,20 +93,22 @@ public sealed class AddTenantAccountCommandHandler(
 
     private static string GenerateTenantIdentifier()
     {
-        //TODO - implement identifier generation logic
-        // pattern XX-XXXX-XXXX
-        return "";
+        var now = DateTime.UtcNow;
+        var firstLetter = (char)Random.Shared.Next('A', 'Z' + 1);
+        var secondLetter = (char)Random.Shared.Next('A', 'Z' + 1);
+
+        return $"{firstLetter}{secondLetter}-{now:yyMM}-{now:mmss}";
     }
 
-    private async Task PublishTenantAccountAddedEvent(Guid tenantSubId)
+    private async Task PublishTenantAccountAddedEvent(Guid tenantSubId, Guid tenantId)
     {
         var @event = new TenantAccountAddedEvent
         {
             TenantSubscription = tenantSubId,
             UserId = loggedInUserService.UserId!,
             Action = "Tenant Account Created",
-            EntityName = nameof(TenantSubscription),
-            EntityId = tenantSubId
+            EntityName = nameof(Tenant),
+            EntityId = tenantId
         };
 
         try

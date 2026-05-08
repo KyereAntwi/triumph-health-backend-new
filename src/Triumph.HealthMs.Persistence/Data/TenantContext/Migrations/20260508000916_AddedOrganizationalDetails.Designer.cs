@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Triumph.HealthMs.Persistence.Data.TenantContext;
@@ -11,9 +12,11 @@ using Triumph.HealthMs.Persistence.Data.TenantContext;
 namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 {
     [DbContext(typeof(TenantManagementDbContext))]
-    partial class TenantManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260508000916_AddedOrganizationalDetails")]
+    partial class AddedOrganizationalDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
