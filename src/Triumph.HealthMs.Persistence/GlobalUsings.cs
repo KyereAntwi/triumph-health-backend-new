@@ -16,6 +16,7 @@ global using Triumph.HealthMs.Core.Interfaces;
 global using Triumph.HealthMs.Core.Models;
 global using Triumph.HealthMs.Core.Models.ApplicationUser;
 global using Triumph.HealthMs.Core.Models.Common;
+global using Triumph.HealthMs.Core.Models.Facilities;
 global using Triumph.HealthMs.Core.Models.Tenants;
 global using Triumph.HealthMs.Persistence.Data.ApplicationUserContext;
 global using Triumph.HealthMs.Persistence.Data.TenantContext;

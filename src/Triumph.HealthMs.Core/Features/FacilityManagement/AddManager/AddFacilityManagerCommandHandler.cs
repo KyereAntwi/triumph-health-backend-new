@@ -1,21 +1,21 @@
-namespace Triumph.HealthMs.Core.Features.TenantManagement.AddTenantManager;
+namespace Triumph.HealthMs.Core.Features.FacilityManagement.AddManager;
 
-public sealed class AddTenantManagerCommandHandler(
+public sealed class AddFacilityManagerCommandHandler(
     ILoggedInUserService loggedInUserService,
-    ITenantManagementDbContext dbContext,
+    IFacilityManagementDbContext dbContext,
     IApplicationUserManagementDbContext userManagementDbContext,
     IPublishEndpoint publishEndpoint,
-    ILogger<AddTenantManagerCommandHandler> logger) 
-    : ICommandHandler<AddTenantManagerCommand, Guid>
+    ILogger<AddFacilityManagerCommandHandler> logger) 
+    : ICommandHandler<AddFacilityManagerCommand, string>
 {
-    public async Task<BaseResponse<Guid>> HandleAsync(AddTenantManagerCommand command, CancellationToken cancellationToken = default)
+    public async Task<BaseResponse<string>> HandleAsync(AddFacilityManagerCommand command, CancellationToken cancellationToken = default)
     {
-        var validation = new AddTenantManagerCommandValidator();
+        var validation = new AddFacilityManagerCommandValidator();
         var validationResult = await validation.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
         {
-            return new BaseResponse<Guid>
+            return new BaseResponse<string>
             {
                 IsSuccess = false,
                 Status = 400,
@@ -24,14 +24,14 @@ public sealed class AddTenantManagerCommandHandler(
             };
         }
 
-        var isAlreadyAManager = await dbContext
-            .TenantManagers
+        var isAlreadyManager = await dbContext
+            .FacilityManagers
             .AnyAsync(m => m.ApplicationUserId == Guid.Parse(command.ApplicationUserId),
                 cancellationToken);
 
-        if (isAlreadyAManager)
+        if (isAlreadyManager)
         {
-            return new BaseResponse<Guid>
+            return new BaseResponse<string>
             {
                 IsSuccess = false,
                 Status = 409,
@@ -39,14 +39,14 @@ public sealed class AddTenantManagerCommandHandler(
                 Errors = ["User is already a manager."]
             };
         }
-        
+
         var userExists =
             await userManagementDbContext.ApplicationUsers.AnyAsync(a => a.Id == Guid.Parse(command.ApplicationUserId),
                 cancellationToken);
 
         if (!userExists)
         {
-            return new BaseResponse<Guid>
+            return new BaseResponse<string>
             {
                 IsSuccess = false,
                 Status = 404,
@@ -55,34 +55,36 @@ public sealed class AddTenantManagerCommandHandler(
             };
         }
 
-        var newManager = new TenantManager
+        var newManager = new FacilityManager
         {
             Id = Guid.CreateVersion7(),
-            TenantId = Guid.Parse(loggedInUserService.TenantId!),
-            ApplicationUserId = Guid.Parse(command.ApplicationUserId)
+            ApplicationUserId = Guid.Parse(command.ApplicationUserId),
+            FacilityId = command.FacilityId,
+            TenantId = Guid.Parse(loggedInUserService.TenantId!)
         };
-        await dbContext.TenantManagers.AddAsync(newManager, cancellationToken);
+        
+        await dbContext.FacilityManagers.AddAsync(newManager, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        await PublishTenantManagerAddedEvent(newManager.Id);
-
-        return new BaseResponse<Guid>
+        await PublishFacilityManagerAddedEvent(newManager.Id);
+        
+        return new BaseResponse<string>
         {
             IsSuccess = true,
             Status = 200,
             Message = "Manager added successfully",
-            Data = newManager.Id
+            Data = newManager.Id.ToString()
         };
     }
     
-    private async Task PublishTenantManagerAddedEvent(Guid tenantManagerId)
+    private async Task PublishFacilityManagerAddedEvent(Guid facilityManagerId)
     {
-        var @event = new TenantManagerAddedEvent(tenantManagerId)
+        var @event = new FacilityManagerAddedEvent
         {
             UserId = loggedInUserService.UserId!,
-            Action = "Added Tenant Manager",
-            EntityName = nameof(TenantManager),
-            EntityId = tenantManagerId
+            Action = "Added a Facility Manager",
+            EntityName = nameof(FacilityManager),
+            EntityId = facilityManagerId
         };
 
         try
@@ -91,7 +93,7 @@ public sealed class AddTenantManagerCommandHandler(
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Problem publishing PublishTenantManagerAddedEvent. Payload = {Payload}", @event);
+            logger.LogError(e, "Problem publishing PublishFacilityManagerAddedEvent. Payload = {Payload}", @event);
         }
     }
 }

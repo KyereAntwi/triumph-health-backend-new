@@ -1,5 +1,6 @@
 // Global using directives
 
+global using System.Globalization;
 global using FluentValidation;
 global using MassTransit;
 global using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,12 @@ global using Triumph.HealthMs.Core.CQRS;
 global using Triumph.HealthMs.Core.Enums;
 global using Triumph.HealthMs.Core.Events;
 global using Triumph.HealthMs.Core.Features.ApplicationUser.AddAUserAccount;
+global using Triumph.HealthMs.Core.Features.ApplicationUser.LinkUserToExistingAccount;
 global using Triumph.HealthMs.Core.Features.ApplicationUser.UpdateUserInfomation;
+global using Triumph.HealthMs.Core.Features.FacilityManagement.AddFacility;
+global using Triumph.HealthMs.Core.Features.FacilityManagement.AddManager;
+global using Triumph.HealthMs.Core.Features.FacilityManagement.RemoveManager;
+global using Triumph.HealthMs.Core.Features.FacilityManagement.UpdateFacility;
 global using Triumph.HealthMs.Core.Features.TenantManagement.AddTenantAccount;
 global using Triumph.HealthMs.Core.Features.TenantManagement.AddTenantManager;
 global using Triumph.HealthMs.Core.Features.TenantManagement.RemoveTenantManager;
@@ -17,5 +23,6 @@ global using Triumph.HealthMs.Core.Features.TenantManagement.RenewSubscription;
 global using Triumph.HealthMs.Core.Interfaces;
 global using Triumph.HealthMs.Core.Models.ApplicationUser;
 global using Triumph.HealthMs.Core.Models.Common;
+global using Triumph.HealthMs.Core.Models.Facilities;
 global using Triumph.HealthMs.Core.Models.Tenants;
 global using Triumph.HealthMs.Core.Utils;
