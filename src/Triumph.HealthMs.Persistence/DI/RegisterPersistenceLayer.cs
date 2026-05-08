@@ -23,6 +23,13 @@ public static class RegisterPersistenceLayer
                 .AddInterceptors(serviceProvider.GetRequiredService<AuditingInterceptor>());
         });
 
+        services.AddScoped<IFacilityManagementDbContext, FacilityManagementDbContext>();
+        services.AddDbContext<FacilityManagementDbContext>((sp, opt) =>
+        {
+            opt.UseNpgsql(connectionString)
+                .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
+        });
+
         services.AddMarten(options =>
         {
             options.Connection(connectionString);

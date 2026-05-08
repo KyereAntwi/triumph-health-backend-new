@@ -1,9 +1,9 @@
 namespace Triumph.HealthMs.Commands.ActionFilters;
 
-public sealed class MustBeATenantManagerFilter(
+public sealed class MustBeAFacilityManagerFilter (
     ILoggedInUserService loggedInUserService,
     IApplicationUserManagementDbContext applicationUserManagementDbContext,
-    ITenantManagementDbContext tenantManagementDbContext)
+    IFacilityManagementDbContext facilityManagementDbContext)
     : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
@@ -17,14 +17,15 @@ public sealed class MustBeATenantManagerFilter(
             })
             .FirstOrDefaultAsync(a => a.UserId == loggedInUserService.UserId);
 
-        if (string.IsNullOrEmpty(loggedInUserService.TenantId)) throw new UnauthorizedAccessException("Forbidden");
+        if (string.IsNullOrEmpty(loggedInUserService.FacilityId)) throw new UnauthorizedAccessException("Forbidden");
         
-        var isTenantAManager = await tenantManagementDbContext
-            .TenantManagers
-            .AnyAsync(m =>
-                m.ApplicationUserId == existingUser!.Id && m.TenantId == Guid.Parse(loggedInUserService.TenantId!));
-            
-        if (isTenantAManager)
+        var isFacilityManager = await facilityManagementDbContext
+            .FacilityManagers
+            .AnyAsync(f =>
+                f.ApplicationUserId == existingUser!.Id &&
+                f.FacilityId == Guid.Parse(loggedInUserService.FacilityId));
+        
+        if (isFacilityManager)
         {
             return await next(context);
         }
