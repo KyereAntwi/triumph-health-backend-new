@@ -26,6 +26,14 @@ public static class RegisterQueryCommandHandlers
         services
             .AddScoped<ICommandHandler<RemoveFacilityManagerCommand, string>, RemoveFacilityManagerCommandHandler>();
         #endregion
+
+        #region EmployeeManagement
+        services.AddScoped<ICommandHandler<AddAnEmployeeCommand, Guid>, AddAnEmployeeCommandHandler>();
+        services
+            .AddScoped<ICommandHandler<UpdateEmployeePermissionsCommand, string>,
+                UpdateEmployeePermissionsCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateEmployeeRoleCommand, string>, UpdateEmployeeRoleCommandHandler>();
+        #endregion
         
         return services;
     }
