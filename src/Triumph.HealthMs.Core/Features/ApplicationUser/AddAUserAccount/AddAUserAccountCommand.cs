@@ -5,7 +5,7 @@ public record AddAUserAccountCommand(
     string LastName,
     string? Email,
     string PhoneNumber,
-    string OtherNames,
+    string? OtherNames,
     string Gender,
     string Nationality,
     string DateOfBirth);
