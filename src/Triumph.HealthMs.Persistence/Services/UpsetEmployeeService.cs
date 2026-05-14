@@ -43,7 +43,8 @@ public class UpsetEmployeeService(
         {
             Id = Guid.CreateVersion7(),
             ApplicationUserId = applicationUser.Id,
-            EmployedAt = DateOnly.Parse(command.EmployedAt)
+            EmployedAt = DateOnly.Parse(command.EmployedAt),
+            FacilityId = Guid.Parse(command.FacilityId)
         };
         newEmployee.EmployeeRoles.Add(new EmployeeRole { RoleId = Guid.Parse(command.RoleId) });
         foreach (var permission in permissionIds)
@@ -51,7 +52,8 @@ public class UpsetEmployeeService(
             newEmployee.EmployeePermissions.Add(new EmployeePermission
             {
                 EmployeeId = newEmployee.Id,
-                PermissionId = permission.Id
+                PermissionId = permission.Id,
+                FacilityId = Guid.Parse(command.FacilityId)
             });
         }
 
@@ -129,7 +131,8 @@ public class UpsetEmployeeService(
             var employeePermissions = permissionIds.Select(id => new EmployeePermission
             {
                 EmployeeId = employee.Id,
-                PermissionId = id
+                PermissionId = id,
+                FacilityId = employee.FacilityId
             });
 
             await dbContext.EmployeePermissions.AddRangeAsync(employeePermissions, cancellationToken);

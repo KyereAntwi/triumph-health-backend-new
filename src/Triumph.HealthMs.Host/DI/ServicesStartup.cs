@@ -111,6 +111,15 @@ public static class ServicesStartup
         });
         
         builder.Services.AddProblemDetails();
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("SecurePolicy", policy => 
+                policy.WithOrigins(
+                    "https://localhost")
+                    .WithMethods("GET", "POST", "PUT", "DELETE", "PUT")
+                    .WithHeaders("Content-Type", "Authorization", "x-ms-tenant-id", "x-ms-facility-id"));
+        });
         
         return builder.Build();
     }

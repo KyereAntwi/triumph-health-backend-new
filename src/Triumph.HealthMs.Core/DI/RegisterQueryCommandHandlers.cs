@@ -34,6 +34,10 @@ public static class RegisterQueryCommandHandlers
                 UpdateEmployeePermissionsCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateEmployeeRoleCommand, string>, UpdateEmployeeRoleCommandHandler>();
         #endregion
+
+        #region PatientManagement
+        services.AddScoped<ICommandHandler<AddPatientCommand, Guid>, AddPatientCommandHandler>();
+        #endregion
         
         return services;
     }

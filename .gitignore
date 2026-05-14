@@ -3,6 +3,8 @@
 bin/
 obj/
 logs/
+.junie/
+.claude/
 
 
 *.Development.json

@@ -2,5 +2,6 @@ namespace Triumph.HealthMs.Core.Enums;
 
 public enum PermissionType
 {
-    None
+    None,
+    MANAGE_PATIENT_BIOGRAPHY
 }

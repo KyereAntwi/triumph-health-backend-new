@@ -1,10 +1,10 @@
 namespace Triumph.HealthMs.Persistence.Data.TenantContext;
 
-public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagementDbContext
+public sealed class PatientManagementDbContext : DbContext, IPatientManagementDbContext
 {
     private readonly ILoggedInUserService _loggedInUserService;
 
-    public EmployeeManagementDbContext(DbContextOptions<EmployeeManagementDbContext> opt, ILoggedInUserService loggedInUserService) : base(opt)
+    public PatientManagementDbContext(DbContextOptions<PatientManagementDbContext> opt, ILoggedInUserService loggedInUserService) : base(opt)
     {
         _loggedInUserService = loggedInUserService;
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
@@ -19,12 +19,8 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
                 case EntityState.Added:
                     entityEntry.Entity.CreatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.CreatedBy;
                     entityEntry.Entity.CreatedAt = DateTime.UtcNow;
-                    entityEntry.Entity.TenantId = (entityEntry.Entity.TenantId != null && entityEntry.Entity.TenantId != Guid.Empty)
-                        ? entityEntry.Entity.TenantId
-                        : Guid.Parse(_loggedInUserService.TenantId!);
-                    entityEntry.Entity.FacilityId = (entityEntry.Entity.FacilityId != null && entityEntry.Entity.FacilityId != Guid.Empty)
-                        ? entityEntry.Entity.FacilityId 
-                        : Guid.Parse(_loggedInUserService.FacilityId!);
+                    entityEntry.Entity.TenantId = Guid.Parse(_loggedInUserService.TenantId!);
+                    entityEntry.Entity.FacilityId = Guid.Parse(_loggedInUserService.FacilityId!);
                     break;
                 case EntityState.Modified:
                     entityEntry.Entity.UpdatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.UpdatedBy;
@@ -38,7 +34,7 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployeeManagementDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PatientManagementDbContext).Assembly);
         ApplyDeletedFilter(modelBuilder);
         ApplyTenantFilter(modelBuilder);
         ApplyFacilityFilter(modelBuilder);
@@ -51,7 +47,7 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
         {
             if (!typeof(AuditableEntity).IsAssignableFrom(entityType.ClrType)) continue;
             
-            var method = typeof(EmployeeManagementDbContext)
+            var method = typeof(PatientManagementDbContext)
                 .GetMethod(nameof(SetDeletedFilter), BindingFlags.NonPublic | BindingFlags.Instance)!
                 .MakeGenericMethod(entityType.ClrType);
             
@@ -65,7 +61,7 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
         {
             if (!typeof(TenantEntity).IsAssignableFrom(entityType.ClrType)) continue;
 
-            var method = typeof(EmployeeManagementDbContext)
+            var method = typeof(PatientManagementDbContext)
                 .GetMethod(nameof(SetTenantFilter), BindingFlags.NonPublic | BindingFlags.Instance)!
                 .MakeGenericMethod(entityType.ClrType);
 
@@ -79,7 +75,7 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
         {
             if(!typeof(FacilityEntity).IsAssignableFrom(entityType.ClrType)) continue;
             
-            var method = typeof(EmployeeManagementDbContext)
+            var method = typeof(PatientManagementDbContext)
                 .GetMethod(nameof(SetFacilityFilter), BindingFlags.NonPublic | BindingFlags.Instance)!
                 .MakeGenericMethod(entityType.ClrType);
             
@@ -101,11 +97,14 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
             .HasQueryFilter(e => e.FacilityId == Guid.Parse(_loggedInUserService.FacilityId!));
     }
 
-    public DbSet<Employee> Employees => Set<Employee>();
-    public DbSet<EmployeeActivity> EmployeeActivities => Set<EmployeeActivity>();
-    public DbSet<EmployeePermission> EmployeePermissions => Set<EmployeePermission>();
-    public DbSet<EmployeeRole> EmployeeRoles => Set<EmployeeRole>();
-    public DbSet<EmploymentAttachment> EmploymentAttachments => Set<EmploymentAttachment>();
-    public DbSet<Permission> Permissions => Set<Permission>();
-    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Patient> Patients => Set<Patient>();
+    public DbSet<Identification> Identifications => Set<Identification>();
+    public DbSet<Consultation> Consultations => Set<Consultation>();
+    public DbSet<PatientDrug> PatientDrugs => Set<PatientDrug>();
+    public DbSet<PatientHealthDiagnosis> PatientHealthDiagnoses => Set<PatientHealthDiagnosis>();
+    public DbSet<PatientLabTest> PatientLabTests => Set<PatientLabTest>();
+    public DbSet<PatientVital> PatientVitals => Set<PatientVital>();
+    public DbSet<Visitation> Visitations => Set<Visitation>();
+    public DbSet<HealthDiagnosis> HealthDiagnoses => Set<HealthDiagnosis>();
+    public DbSet<VitalItem> VitalItems => Set<VitalItem>();
 }

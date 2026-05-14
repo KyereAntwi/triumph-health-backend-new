@@ -19,6 +19,7 @@ global using Triumph.HealthMs.Core.Features.FacilityManagement.AddFacility;
 global using Triumph.HealthMs.Core.Features.FacilityManagement.AddManager;
 global using Triumph.HealthMs.Core.Features.FacilityManagement.RemoveManager;
 global using Triumph.HealthMs.Core.Features.FacilityManagement.UpdateFacility;
+global using Triumph.HealthMs.Core.Features.PatientManagment.AddPatient;
 global using Triumph.HealthMs.Core.Features.TenantManagement.AddTenantAccount;
 global using Triumph.HealthMs.Core.Features.TenantManagement.AddTenantManager;
 global using Triumph.HealthMs.Core.Features.TenantManagement.RemoveTenantManager;

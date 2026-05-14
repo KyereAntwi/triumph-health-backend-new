@@ -29,5 +29,10 @@ public sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<Appl
         builder.Property(x => x.PhoneNumber)
             .HasMaxLength(15)
             .IsRequired();
+
+        builder.Property(x => x.ProfileImageUrl)
+            .HasMaxLength(255);
+
+        builder.HasIndex(x => x.Deleted);
     }
 }
