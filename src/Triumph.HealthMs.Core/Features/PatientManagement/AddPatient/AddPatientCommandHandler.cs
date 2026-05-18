@@ -1,4 +1,4 @@
-namespace Triumph.HealthMs.Core.Features.PatientManagment.AddPatient;
+namespace Triumph.HealthMs.Core.Features.PatientManagement.AddPatient;
 
 public sealed class AddPatientCommandHandler(
     IPermissionService permissionService,

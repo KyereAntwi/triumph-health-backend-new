@@ -1,14 +1,12 @@
-using Triumph.HealthMs.Core.Features.PatientManagement.AddPatient;
-
 namespace Triumph.HealthMs.Commands.V1.PatientManagement;
 
-public sealed class AddPatientEndpoint : ICarterModule
+public sealed class AddPatientIdentificationEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/patients", Handle)
-            .WithName("AddPatient")
-            .WithDescription("Add a patient and send an invitation link")
+        app.MapPost("/patients/{id:guid}/identifications", Handle)
+            .WithName("AddIdentification")
+            .WithDescription("Add a patient identification")
             .WithTags("Patients")
             .Produces<BaseResponse<Guid>>(StatusCodes.Status400BadRequest)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status404NotFound)
@@ -20,15 +18,13 @@ public sealed class AddPatientEndpoint : ICarterModule
     }
 
     private static async Task<IResult> Handle(
-        [FromBody] AddPatientCommand command,
-        [FromServices] ICommandHandler<AddPatientCommand, Guid> handler)
+        [FromRoute] Guid id,
+        [FromBody] AddPatientIdentityCommand command,
+        [FromServices] ICommandHandler<AddPatientIdentityCommand, Guid> handler)
     {
+        command.PatientId = id;
+
         var result = await handler.HandleAsync(command);
-        return result.ToHttpResult(
-            routeName: "GetPatientById",
-            routeValues: new
-            {
-                id = result.Data
-            });
+        return result.ToHttpResult("GetIdentificationById", new { id = result.Data });
     }
 }

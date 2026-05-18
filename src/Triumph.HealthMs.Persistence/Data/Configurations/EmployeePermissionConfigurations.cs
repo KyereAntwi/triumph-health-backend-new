@@ -15,5 +15,6 @@ public sealed class EmployeePermissionConfigurations : IEntityTypeConfiguration<
             .HasForeignKey(x => x.PermissionId);
 
         builder.HasIndex(x => new { x.TenantId, x.FacilityId, x.EmployeeId, x.Deleted });
+        builder.HasIndex(x => x.PermissionId);
     }
 }

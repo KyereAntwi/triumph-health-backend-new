@@ -37,6 +37,11 @@ public static class RegisterQueryCommandHandlers
 
         #region PatientManagement
         services.AddScoped<ICommandHandler<AddPatientCommand, Guid>, AddPatientCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdatePatientCommand, string>, UpdatePatientCommandHandler>();
+        services.AddScoped<ICommandHandler<AddPatientIdentityCommand, Guid>, AddPatientIdentityCommandHandler>();
+        services.AddScoped<ICommandHandler<RemoveIdentificationCommand, string>, RemoveIdentificationCommandHandler>();
+        services.AddScoped<ICommandHandler<AddVisitCommand, Guid>, AddVisitCommandHandler>();
+        services.AddScoped<ICommandHandler<TakeVitalMeasurementCommand, string>, TakeVitalMeasurementCommandHandler>();
         #endregion
         
         return services;
