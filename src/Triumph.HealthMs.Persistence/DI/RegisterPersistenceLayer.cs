@@ -1,3 +1,5 @@
+using Marten;
+
 namespace Triumph.HealthMs.Persistence.DI;
 
 public static class RegisterPersistenceLayer
@@ -44,6 +46,13 @@ public static class RegisterPersistenceLayer
         services.AddScoped<IEmployeeManagementDbContext>(
             sp => sp.GetRequiredService<EmployeeManagementDbContext>());
 
+        services.AddDbContext<PatientManagementDbContext>((sp, opt) =>
+        {
+            opt.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>())
+                .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
+        });
+        services.AddScoped<IPatientManagementDbContext>(sp => sp.GetRequiredService<PatientManagementDbContext>());
+
         services.AddMarten(options =>
         {
             options.Connection(connectionString);
@@ -53,6 +62,8 @@ public static class RegisterPersistenceLayer
         .UseLightweightSessions();
 
         services.AddScoped<IUpsetEmployeeService, UpsetEmployeeService>();
+        services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IPatientUpsetService, PatientUpsetService>();
 
         return services;
     }

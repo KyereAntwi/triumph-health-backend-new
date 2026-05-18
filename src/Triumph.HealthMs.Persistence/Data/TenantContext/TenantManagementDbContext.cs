@@ -13,18 +13,29 @@ public sealed class TenantManagementDbContext : DbContext, ITenantManagementDbCo
     
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {
-        foreach (var entityEntry in ChangeTracker.Entries<AuditableEntity>())
+        foreach (var entityEntry in ChangeTracker.Entries<TenantEntity>())
         {
             switch (entityEntry.State)
             {
                 case EntityState.Added:
                     entityEntry.Entity.CreatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.CreatedBy;
                     entityEntry.Entity.CreatedAt = DateTime.UtcNow;
+                    entityEntry.Entity.TenantId = (entityEntry.Entity.TenantId != null && entityEntry.Entity.TenantId != Guid.Empty)
+                        ? entityEntry.Entity.TenantId
+                        : Guid.Parse(_loggedInUserService.TenantId!);
                     break;
                 case EntityState.Modified:
                     entityEntry.Entity.UpdatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.UpdatedBy;
                     entityEntry.Entity.UpdatedAt = DateTime.UtcNow;
                     break;
+            }
+        }
+
+        foreach (var entityEntry in ChangeTracker.Entries<TenantEntity>())
+        {
+            if (entityEntry.State == EntityState.Added && !string.IsNullOrEmpty(_loggedInUserService.TenantId))
+            {
+                entityEntry.Entity.TenantId = Guid.Parse(_loggedInUserService.TenantId);
             }
         }
         

@@ -16,6 +16,7 @@ public sealed class PermissionConfigurations : IEntityTypeConfiguration<Permissi
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.HasIndex(x => x.PermissionType);
         builder.HasIndex(x => x.Deleted);
     }
 }

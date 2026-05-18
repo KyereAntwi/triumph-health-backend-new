@@ -12,6 +12,9 @@ public static class PipelineStartup
         SetupScalarDocumentation(app);
         
         app.UseHttpsRedirection();
+
+        app.UseCors("SecurePolicy");
+        
         app.UseAuthentication();
         app.UseMiddleware<UserResourceResolverMiddleware>();
         app.UseAuthorization();
