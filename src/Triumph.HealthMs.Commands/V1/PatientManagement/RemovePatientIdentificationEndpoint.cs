@@ -13,6 +13,9 @@ public sealed class RemovePatientIdentificationEndpoint : ICarterModule
             .Produces<BaseResponse<string>>(StatusCodes.Status403Forbidden)
             .Produces(StatusCodes.Status500InternalServerError)
             .HasApiVersion(1)
+            .AddEndpointFilter<TenantIdRequiredFilter>()
+            .AddEndpointFilter<RequiresActiveSubscription>()
+            .AddEndpointFilter<FacilityIdRequired>()
             .RequireAuthorization();
     }
 

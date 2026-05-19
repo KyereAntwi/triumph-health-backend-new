@@ -12,24 +12,38 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
     
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {
-        foreach (var entityEntry in ChangeTracker.Entries<FacilityEntity>())
+        foreach (var entityEntry in ChangeTracker.Entries<AuditableEntity>())
         {
             switch (entityEntry.State)
             {
                 case EntityState.Added:
                     entityEntry.Entity.CreatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.CreatedBy;
-                    entityEntry.Entity.CreatedAt = DateTime.UtcNow;
-                    entityEntry.Entity.TenantId = (entityEntry.Entity.TenantId != null && entityEntry.Entity.TenantId != Guid.Empty)
-                        ? entityEntry.Entity.TenantId
-                        : Guid.Parse(_loggedInUserService.TenantId!);
-                    entityEntry.Entity.FacilityId = (entityEntry.Entity.FacilityId != null && entityEntry.Entity.FacilityId != Guid.Empty)
-                        ? entityEntry.Entity.FacilityId 
-                        : Guid.Parse(_loggedInUserService.FacilityId!);
+                    entityEntry.Entity.CreatedAt = DateTimeOffset.UtcNow;
                     break;
                 case EntityState.Modified:
                     entityEntry.Entity.UpdatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.UpdatedBy;
-                    entityEntry.Entity.UpdatedAt = DateTime.UtcNow;
+                    entityEntry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
                     break;
+            }
+        }
+
+        foreach (var entityEntry in ChangeTracker.Entries<TenantEntity>())
+        {
+            if (entityEntry.State == EntityState.Added)
+            {
+                entityEntry.Entity.TenantId = (entityEntry.Entity.TenantId != null && entityEntry.Entity.TenantId != Guid.Empty)
+                    ? entityEntry.Entity.TenantId
+                    : Guid.Parse(_loggedInUserService.TenantId!);
+            }
+        }
+        
+        foreach (var entityEntry in ChangeTracker.Entries<FacilityEntity>())
+        {
+            if (entityEntry.State == EntityState.Added)
+            {
+                entityEntry.Entity.FacilityId = (entityEntry.Entity.FacilityId != null && entityEntry.Entity.FacilityId != Guid.Empty)
+                    ? entityEntry.Entity.FacilityId 
+                    : Guid.Parse(_loggedInUserService.FacilityId!);
             }
         }
         
@@ -40,8 +54,10 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployeeManagementDbContext).Assembly);
         ApplyDeletedFilter(modelBuilder);
-        ApplyTenantFilter(modelBuilder);
-        ApplyFacilityFilter(modelBuilder);
+        
+        if (!string.IsNullOrEmpty(_loggedInUserService.TenantId)) ApplyTenantFilter(modelBuilder);
+        if (!string.IsNullOrEmpty(_loggedInUserService.FacilityId)) ApplyFacilityFilter(modelBuilder);
+        
         base.OnModelCreating(modelBuilder);
     }
     

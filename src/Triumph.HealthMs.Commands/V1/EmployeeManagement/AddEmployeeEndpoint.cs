@@ -1,4 +1,4 @@
-namespace Triumph.HealthMs.Commands.V1.EmployeeManagment;
+namespace Triumph.HealthMs.Commands.V1.EmployeeManagement;
 
 public sealed class AddEmployeeEndpoint : ICarterModule
 {
@@ -14,6 +14,8 @@ public sealed class AddEmployeeEndpoint : ICarterModule
             .Produces(StatusCodes.Status403Forbidden)
             .Produces(StatusCodes.Status500InternalServerError)
             .HasApiVersion(1)
+            .AddEndpointFilter<TenantIdRequiredFilter>()
+            .AddEndpointFilter<RequiresActiveSubscription>()
             .AddEndpointFilter<MustBeAManagerFilter>()
             .RequireAuthorization();
     }

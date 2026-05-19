@@ -4,6 +4,8 @@ public sealed class PermissionConfigurations : IEntityTypeConfiguration<Permissi
 {
     public void Configure(EntityTypeBuilder<Permission> builder)
     {
+        builder.ToTable("Permissions");
+
         builder.HasKey(x => x.Id);
         builder.Property(x => x.PermissionType)
             .HasDefaultValue(PermissionType.None)

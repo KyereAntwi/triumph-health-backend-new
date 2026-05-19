@@ -8,7 +8,7 @@ public sealed class TakeVitalMeasurementCommandHandler (
 {
     public async Task<BaseResponse<string>> HandleAsync(TakeVitalMeasurementCommand command, CancellationToken cancellationToken = default)
     {
-        if (!await permissionService.UserHasRequiredPermission(PermissionType.MANAGE_PATIENT_VITALS, cancellationToken))
+        if (!await permissionService.UserHasRequiredPermission(PermissionType.ManagePatientVitals, cancellationToken))
         {
             return new BaseResponse<string>
             {

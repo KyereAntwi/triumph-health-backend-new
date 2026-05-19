@@ -8,11 +8,12 @@ public sealed class RenewSubscriptionEndpoint : ICarterModule
             .WithName("RenewSubscription")
             .WithDescription("Renew a tenants subscription")
             .WithTags("Tenants")
-            .Produces<BaseResponse<Guid>>(StatusCodes.Status200OK)
+            .Produces<BaseResponse<Guid>>()
             .Produces<BaseResponse<Guid>>(StatusCodes.Status400BadRequest)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status404NotFound)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status403Forbidden)
             .Produces(StatusCodes.Status500InternalServerError)
+            .AddEndpointFilter<TenantIdRequiredFilter>()
             .AddEndpointFilter<MustBeATenantManagerFilter>()
             .RequireAuthorization();
     }

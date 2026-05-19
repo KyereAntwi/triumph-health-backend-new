@@ -24,7 +24,7 @@ public static class RegisterPersistenceLayer
 
         services.AddDbContext<TenantManagementDbContext>((sp, options) =>
         {
-            options.UseNpgsql(connectionString)
+            options.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>())
                 .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
         });
         services.AddScoped<ITenantManagementDbContext>(

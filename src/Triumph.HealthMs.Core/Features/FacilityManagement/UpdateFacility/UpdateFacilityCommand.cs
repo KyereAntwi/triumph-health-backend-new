@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.FacilityManagement.UpdateFacility;
 
-public abstract record UpdateFacilityCommand(
+public record UpdateFacilityCommand(
     string Name,
     string Address,
     string Email,

@@ -4,6 +4,8 @@ public sealed class PatientHealthDiagnosisConfigurations : IEntityTypeConfigurat
 {
     public void Configure(EntityTypeBuilder<PatientHealthDiagnosis> builder)
     {
+        builder.ToTable("PatientHealthDiagnoses");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.ExtraNotes)

@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.PatientManagement.UpdatePatient;
 
-public abstract record UpdatePatientCommand(
+public record UpdatePatientCommand(
     string FirstName,
     string LastName,
     string? Email,

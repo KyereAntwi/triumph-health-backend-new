@@ -4,6 +4,7 @@ public sealed class AddTenantAccountCommandHandler(
     ITenantManagementDbContext dbContext,
     ILoggedInUserService loggedInUserService,
     IPublishEndpoint publishEndpoint,
+    IApplicationUserManagementDbContext applicationUserManagementDbContext,
     ILogger<AddTenantAccountCommandHandler> logger) 
     : ICommandHandler<AddTenantAccountCommand, AddTenantAccountResponse>
 {
@@ -71,10 +72,17 @@ public sealed class AddTenantAccountCommandHandler(
                     Enum.Parse<SubscriptionChargeRate>(command.SubscriptionChargeRate)))
         };
         newTenant.TenantSubscriptions.Add(newTenantSubscription);
+
+        var appUserId = await applicationUserManagementDbContext
+            .ApplicationUsers
+            .Where(a => a.UserId == loggedInUserService.UserId)
+            .Select(a => a.Id)
+            .FirstOrDefaultAsync(cancellationToken);
         
         newTenant.TenantManagers.Add(new TenantManager
         {
-            ApplicationUserId = Guid.Parse(loggedInUserService.UserId!)
+            ApplicationUserId = appUserId,
+            TenantId = newTenant.Id
         });
 
         await dbContext.Tenants.AddAsync(newTenant, cancellationToken);

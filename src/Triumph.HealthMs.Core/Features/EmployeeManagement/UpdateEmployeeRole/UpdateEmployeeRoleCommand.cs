@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.EmployeeManagement.UpdateEmployeeRole;
 
-public abstract record UpdateEmployeeRoleCommand(
+public record UpdateEmployeeRoleCommand(
     string RoleId,
     string StartsAt,
     string OldRoleEndedAt)

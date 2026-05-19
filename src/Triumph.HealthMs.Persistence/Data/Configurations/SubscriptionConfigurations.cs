@@ -4,6 +4,8 @@ public sealed class SubscriptionConfigurations : IEntityTypeConfiguration<Subscr
 {
     public void Configure(EntityTypeBuilder<Subscription> builder)
     {
+        builder.ToTable("Subscriptions");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Title)

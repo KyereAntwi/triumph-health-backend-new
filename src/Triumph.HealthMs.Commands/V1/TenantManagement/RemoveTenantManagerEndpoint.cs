@@ -10,10 +10,12 @@ public sealed class RemoveTenantManagerEndpoint : ICarterModule
             .WithTags("Tenants")
             .Produces<BaseResponse<Guid>>(StatusCodes.Status400BadRequest)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status409Conflict)
-            .Produces<BaseResponse<Guid>>(StatusCodes.Status200OK)
+            .Produces<BaseResponse<Guid>>()
             .Produces(StatusCodes.Status403Forbidden)
             .Produces(StatusCodes.Status500InternalServerError)
             .HasApiVersion(1)
+            .AddEndpointFilter<TenantIdRequiredFilter>()
+            .AddEndpointFilter<RequiresActiveSubscription>()
             .AddEndpointFilter<MustBeATenantManagerFilter>()
             .RequireAuthorization();
     }

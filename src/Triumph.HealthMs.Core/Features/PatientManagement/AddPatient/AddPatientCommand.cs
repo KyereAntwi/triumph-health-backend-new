@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.PatientManagement.AddPatient;
 
-public abstract record AddPatientCommand(
+public record AddPatientCommand(
     string FirstName,
     string LastName,
     string? Email,
@@ -14,7 +14,7 @@ public abstract record AddPatientCommand(
     IEnumerable<IdentificationDto>? Identifications,
     bool SendAccountLinkageInvitation);
     
-public abstract record IdentificationDto(
+public record IdentificationDto(
     string Type,
     string IdentificationNumber,
     string DateIssued,

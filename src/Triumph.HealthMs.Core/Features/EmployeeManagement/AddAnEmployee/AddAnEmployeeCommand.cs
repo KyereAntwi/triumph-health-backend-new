@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.EmployeeManagement.AddAnEmployee;
 
-public abstract record AddAnEmployeeCommand(
+public record AddAnEmployeeCommand(
     string FirstName,
     string LastName,
     string Email,

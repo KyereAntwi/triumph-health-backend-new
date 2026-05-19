@@ -4,6 +4,8 @@ public sealed class IdentificationConfigurations : IEntityTypeConfiguration<Iden
 {
     public void Configure(EntityTypeBuilder<Identification> builder)
     {
+        builder.ToTable("Identifications");
+
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => new { x.PatientId, x.Deleted, x.Type });
 

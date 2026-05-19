@@ -100,6 +100,7 @@ public static class ServicesStartup
         builder.Services.AddPersistenceLayer(builder.Configuration);
         builder.Services.AddQueryCommandHandlers();
         builder.Services.AddCommandServices();
+        builder.Services.AddQueriesServices();
 
         builder.Services.AddScoped<ILoggedInUserService, LoggedInUserService>();
 
@@ -110,13 +111,14 @@ public static class ServicesStartup
             options.DefaultApiVersion = new ApiVersion(1, 0);
         });
         
+        builder.Services.AddExceptionHandler<GlobalExceptionMiddleware>();
         builder.Services.AddProblemDetails();
 
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("SecurePolicy", policy => 
                 policy.WithOrigins(
-                    "https://localhost")
+                    "https://localhost:7153")
                     .WithMethods("GET", "POST", "PUT", "DELETE", "PUT")
                     .WithHeaders("Content-Type", "Authorization", "x-ms-tenant-id", "x-ms-facility-id"));
         });

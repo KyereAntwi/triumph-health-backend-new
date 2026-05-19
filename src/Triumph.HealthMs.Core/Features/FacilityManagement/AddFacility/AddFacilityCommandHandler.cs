@@ -65,7 +65,7 @@ public sealed class AddFacilityCommandHandler(
             Email = command.Email,
             MainTelephone = command.MainTelephone,
             Description = command.Description,
-            EstablishedAt = command.EstablishedAt != null ? DateOnly.Parse(command.EstablishedAt) : null
+            EstablishedAt = command.EstablishedAt != null ? DateOnly.Parse(command.EstablishedAt) : new DateOnly()
         };
         await context.OrganizationalFacilities.AddAsync(newFacility, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);

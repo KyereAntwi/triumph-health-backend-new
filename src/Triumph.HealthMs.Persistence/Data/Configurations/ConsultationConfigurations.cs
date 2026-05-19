@@ -4,6 +4,8 @@ public sealed class ConsultationConfigurations : IEntityTypeConfiguration<Consul
 {
     public void Configure(EntityTypeBuilder<Consultation> builder)
     {
+        builder.ToTable("Consultations");
+
         builder.HasIndex(x => x.Id);
 
         builder.HasOne(x => x.Visitation)

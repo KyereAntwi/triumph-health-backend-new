@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.FacilityManagement.AddFacility;
 
-public abstract record AddFacilityCommand(
+public record AddFacilityCommand(
     string UrlSuffix,
     string Name,
     string Address,

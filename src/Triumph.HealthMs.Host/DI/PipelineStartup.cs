@@ -1,3 +1,5 @@
+using HotChocolate.AspNetCore;
+
 namespace Triumph.HealthMs.Host.DI;
 
 public static class PipelineStartup
@@ -13,6 +15,7 @@ public static class PipelineStartup
         
         app.UseHttpsRedirection();
 
+        app.UseExceptionHandler();
         app.UseCors("SecurePolicy");
         
         app.UseAuthentication();
@@ -24,15 +27,16 @@ public static class PipelineStartup
             .ReportApiVersions()
             .Build();
         
+        app.MapGraphQL();
+        
         var versionedGroup = app.MapGroup("/api/v{version:apiVersion}")
             .WithApiVersionSet(versionSet);
-        
         versionedGroup.MapCarter();
         
         return app;
     }
-    
-    static void SetupScalarDocumentation(WebApplication app)
+
+    private static void SetupScalarDocumentation(WebApplication app)
     {
         app.MapOpenApi();
 
@@ -44,17 +48,22 @@ public static class PipelineStartup
                 .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
             
             var clientId = app.Configuration["AuthServer:ClientId"];
-            if (!string.IsNullOrEmpty(clientId))
+            var clientSecret = app.Configuration["AuthServer:ClientSecret"];
+            
+            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret)) return;
+            
+            options.AddPreferredSecuritySchemes("OAuth2");
+            options.AddAuthorizationCodeFlow("OAuth2", flow =>
             {
-#pragma warning disable CS0618
-                options.WithOAuth2Authentication(opt =>
-                {
-                    opt.ClientId = clientId;
-                    opt.Scopes = ["openid", "profile", "email", "api.read"];
-                });
-#pragma warning restore CS0618
-                options.AddPreferredSecuritySchemes("OAuth2");
-            }
+                flow.ClientId = clientId;
+                flow.ClientSecret = clientSecret;
+                flow.Pkce = Pkce.Sha256;
+                flow.SelectedScopes = ["openid", "profile", "email", "api.read"];
+                flow.AuthorizationUrl = app.Configuration["AuthServer:AuthorizationUrl"];
+                flow.TokenUrl = app.Configuration["AuthServer:TokenUrl"];
+                
+                flow.AddQueryParameter("audience", app.Configuration["AuthServer:Audience"]!);
+            });
         });
     }
 }

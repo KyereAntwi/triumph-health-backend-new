@@ -4,6 +4,8 @@ public sealed class LinkInvitationConfigurations : IEntityTypeConfiguration<Link
 {
     public void Configure(EntityTypeBuilder<LinkInvitation> builder)
     {
+        builder.ToTable("LinkInvitations");
+
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.TenantId);
         builder.HasIndex(x  => x.ApplicationUserId);
