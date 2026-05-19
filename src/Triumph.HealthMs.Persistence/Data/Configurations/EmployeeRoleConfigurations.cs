@@ -4,6 +4,8 @@ public sealed class EmployeeRoleConfigurations : IEntityTypeConfiguration<Employ
 {
     public void Configure(EntityTypeBuilder<EmployeeRole> builder)
     {
+        builder.ToTable("EmployeeRoles");
+
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.Employee)

@@ -10,4 +10,6 @@ public class OrganizationalFacility : TenantEntity
     public string? LogoUrl { get; set; }
     public string? Description { get; set; }
     public DateOnly? EstablishedAt { get; set; }
+
+    public ICollection<FacilityManager> FacilityManagers { get; set; } = [];
 }

@@ -4,6 +4,8 @@ public sealed class VitalItemConfigurations : IEntityTypeConfiguration<VitalItem
 {
     public void Configure(EntityTypeBuilder<VitalItem> builder)
     {
+        builder.ToTable("VitalItems");
+        
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)

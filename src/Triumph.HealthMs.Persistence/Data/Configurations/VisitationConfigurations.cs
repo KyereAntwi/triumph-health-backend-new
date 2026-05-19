@@ -4,6 +4,8 @@ public sealed class VisitationConfigurations : IEntityTypeConfiguration<Visitati
 {
     public void Configure(EntityTypeBuilder<Visitation> builder)
     {
+        builder.ToTable("Visitations");
+
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.VisitingReason)

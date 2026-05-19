@@ -4,6 +4,8 @@ public sealed class TenantManagerConfiguration : IEntityTypeConfiguration<Tenant
 {
     public void Configure(EntityTypeBuilder<TenantManager> builder)
     {
+        builder.ToTable("TenantManagers");
+
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.Tenant)

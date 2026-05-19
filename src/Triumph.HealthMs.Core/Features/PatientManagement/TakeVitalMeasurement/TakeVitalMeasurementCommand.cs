@@ -1,6 +1,7 @@
 namespace Triumph.HealthMs.Core.Features.PatientManagement.TakeVitalMeasurement;
 
-public abstract record TakeVitalMeasurementCommand(IEnumerable<VitalMeasurementDto> VitalMeasurements)
+public record TakeVitalMeasurementCommand(
+    IEnumerable<VitalMeasurementDto> VitalMeasurements)
 {
     public Guid PatientId { get; set; }
     public Guid VisitationId { get; set; }

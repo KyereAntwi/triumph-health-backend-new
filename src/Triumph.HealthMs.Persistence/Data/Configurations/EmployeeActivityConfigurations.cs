@@ -4,6 +4,8 @@ public sealed class EmployeeActivityConfigurations : IEntityTypeConfiguration<Em
 {
     public void Configure(EntityTypeBuilder<EmployeeActivity> builder)
     {
+        builder.ToTable("EmployeeActivities");
+
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Action)
             .HasMaxLength(500)

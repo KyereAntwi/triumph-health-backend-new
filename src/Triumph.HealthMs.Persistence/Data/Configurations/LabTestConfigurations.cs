@@ -4,6 +4,8 @@ public sealed class LabTestConfigurations : IEntityTypeConfiguration<LabTest>
 {
     public void Configure(EntityTypeBuilder<LabTest> builder)
     {
+        builder.ToTable("LabTests");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)

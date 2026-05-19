@@ -15,6 +15,8 @@ public sealed class AddFacilityManagerEndpoint : ICarterModule
             .Produces(StatusCodes.Status403Forbidden)
             .Produces(StatusCodes.Status500InternalServerError)
             .HasApiVersion(1)
+            .AddEndpointFilter<TenantIdRequiredFilter>()
+            .AddEndpointFilter<RequiresActiveSubscription>()
             .AddEndpointFilter<MustBeAManagerFilter>()
             .RequireAuthorization();
     }

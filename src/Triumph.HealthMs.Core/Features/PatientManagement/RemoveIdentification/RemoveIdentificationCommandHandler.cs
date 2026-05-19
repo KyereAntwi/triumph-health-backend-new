@@ -7,7 +7,7 @@ public sealed class RemoveIdentificationCommandHandler(
 {
     public async Task<BaseResponse<string>> HandleAsync(RemoveIdentificationCommand command, CancellationToken cancellationToken = default)
     {
-        if (!await permissionService.UserHasRequiredPermission(PermissionType.MANAGE_PATIENT_BIOGRAPHY, cancellationToken))
+        if (!await permissionService.UserHasRequiredPermission(PermissionType.ManagePatientBiography, cancellationToken))
         {
             return new BaseResponse<string>
             {

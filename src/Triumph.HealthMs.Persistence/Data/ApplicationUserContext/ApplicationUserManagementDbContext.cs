@@ -19,11 +19,11 @@ public sealed class ApplicationUserManagementDbContext : DbContext, IApplication
             {
                 case EntityState.Added:
                     entityEntry.Entity.CreatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.CreatedBy;
-                    entityEntry.Entity.CreatedAt = DateTime.UtcNow;
+                    entityEntry.Entity.CreatedAt = DateTimeOffset.UtcNow;
                     break;
                 case EntityState.Modified:
                     entityEntry.Entity.UpdatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.UpdatedBy;
-                    entityEntry.Entity.UpdatedAt = DateTime.UtcNow;
+                    entityEntry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
                     break;
             }
         }

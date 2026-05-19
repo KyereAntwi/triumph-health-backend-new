@@ -18,11 +18,26 @@ public static class RegisterExternalServicesLayer
                     ValidateAudience = true,
                     ValidateIssuer = true,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
+                    NameClaimType = "name",
+                    RoleClaimType = "https://qa.triumphhealthms.com/roles/roles"
                 };
 
                 options.Events = new JwtBearerEvents
                 {
+                    OnMessageReceived = context =>
+
+                    {
+
+                        var token = context.Token ??
+
+                                    context.Request.Headers.Authorization.ToString();
+
+                        Console.WriteLine($"TOKEN: {token}");
+
+                        return Task.CompletedTask;
+
+                    },
+                    
                     OnAuthenticationFailed = context =>
                     {
                         Console.WriteLine($"OnAuthenticationFailed {context.Exception}");

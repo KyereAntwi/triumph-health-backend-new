@@ -1,3 +1,5 @@
+using Triumph.HealthMs.Core.Features.TenantManagement.GetTenants;
+
 namespace Triumph.HealthMs.Core.DI;
 
 public static class RegisterQueryCommandHandlers
@@ -17,6 +19,7 @@ public static class RegisterQueryCommandHandlers
         services.AddScoped<ICommandHandler<RenewSubscriptionCommand, Guid>, RenewSubscriptionCommandHandler>();
         services.AddScoped<ICommandHandler<AddTenantManagerCommand, Guid>, AddTenantManagerCommandHandler>();
         services.AddScoped<ICommandHandler<RemoveTenantManagerCommand, string>, RemoveTenantManagerCommandHandler>();
+        services.AddScoped<IQueryHandler<GetTenantsQuery, IEnumerable<TenantDto>>, GetTenantsQueryHandler>();
         #endregion
 
         #region FacilityManagement
@@ -25,6 +28,9 @@ public static class RegisterQueryCommandHandlers
         services.AddScoped<ICommandHandler<AddFacilityManagerCommand, string>, AddFacilityManagerCommandHandler>();
         services
             .AddScoped<ICommandHandler<RemoveFacilityManagerCommand, string>, RemoveFacilityManagerCommandHandler>();
+        services
+            .AddScoped<IQueryHandler<GetTenantFacilitiesQuery, IEnumerable<TenantFacilityDto>>,
+                GetTenantFacilitiesQueryHandler>();
         #endregion
 
         #region EmployeeManagement

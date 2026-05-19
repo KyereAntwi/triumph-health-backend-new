@@ -4,6 +4,8 @@ public class OrganizationalFacilityConfigurations : IEntityTypeConfiguration<Org
 {
     public void Configure(EntityTypeBuilder<OrganizationalFacility> builder)
     {
+        builder.ToTable("OrganizationalFacilities");
+        
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.TenantId);
 
@@ -31,5 +33,12 @@ public class OrganizationalFacilityConfigurations : IEntityTypeConfiguration<Org
         
         builder.Property(x => x.Description)
             .HasMaxLength(500);
+
+        builder.Property(x => x.LogoUrl)
+            .HasMaxLength(255);
+
+        builder.HasMany(x => x.FacilityManagers)
+            .WithOne(x => x.OrganizationalFacility)
+            .HasForeignKey(x => x.FacilityId);
     }
 }

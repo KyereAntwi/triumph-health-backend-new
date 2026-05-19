@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.PatientManagement.AddPatientIdentity;
 
-public abstract record AddPatientIdentityCommand(
+public record AddPatientIdentityCommand(
     string Type,
     string IdentificationNumber,
     string DateIssued,

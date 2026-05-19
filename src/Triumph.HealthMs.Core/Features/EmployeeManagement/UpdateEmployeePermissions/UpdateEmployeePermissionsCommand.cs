@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.EmployeeManagement.UpdateEmployeePermissions;
 
-public abstract record UpdateEmployeePermissionsCommand(
+public record UpdateEmployeePermissionsCommand(
     IEnumerable<string> Permissions)
 {
     public Guid EmployeeId { get; set; }

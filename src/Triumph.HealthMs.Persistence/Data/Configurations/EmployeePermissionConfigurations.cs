@@ -4,6 +4,8 @@ public sealed class EmployeePermissionConfigurations : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<EmployeePermission> builder)
     {
+        builder.ToTable("EmployeePermissions");
+
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.Employee)

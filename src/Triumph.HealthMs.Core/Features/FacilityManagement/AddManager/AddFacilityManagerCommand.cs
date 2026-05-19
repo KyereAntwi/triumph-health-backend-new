@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.FacilityManagement.AddManager;
 
-public abstract record AddFacilityManagerCommand(
+public record AddFacilityManagerCommand(
     string ApplicationUserId)
 {
     public Guid FacilityId { get; set; }

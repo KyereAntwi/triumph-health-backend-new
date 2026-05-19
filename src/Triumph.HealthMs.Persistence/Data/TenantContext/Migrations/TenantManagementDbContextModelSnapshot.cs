@@ -28,7 +28,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -41,7 +41,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -76,7 +76,11 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<string>("ProfileImageUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -89,10 +93,12 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Deleted");
+
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("ApplicationUser");
+                    b.ToTable("ApplicationUsers", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.ApplicationUser.LinkInvitation", b =>
@@ -104,7 +110,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -114,7 +120,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -134,7 +140,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -146,7 +152,200 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("LinkInvitation");
+                    b.ToTable("LinkInvitations", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Common.Drug", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Manufacturer")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Prescription")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name", "Deleted");
+
+                    b.ToTable("Drugs", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Common.HealthDiagnosis", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("RecommendedPrescription")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Deleted", "Name");
+
+                    b.ToTable("HealthDiagnoses", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Common.LabTest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Deleted", "Name");
+
+                    b.ToTable("LabTests", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Common.VitalItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Deleted", "Name");
+
+                    b.ToTable("VitalItems", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.Employee", b =>
@@ -158,7 +357,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -168,7 +367,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -183,7 +382,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -196,7 +395,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId", "FacilityId", "Deleted");
 
-                    b.ToTable("Employee");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.EmployeeActivity", b =>
@@ -210,7 +409,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -220,7 +419,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -235,7 +434,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -247,7 +446,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId", "FacilityId", "EmployeeId", "Deleted");
 
-                    b.ToTable("EmployeeActivity");
+                    b.ToTable("EmployeeActivities", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.EmployeePermission", b =>
@@ -256,7 +455,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -266,7 +465,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -287,7 +486,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -303,7 +502,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId", "FacilityId", "EmployeeId", "Deleted");
 
-                    b.ToTable("EmployeePermission");
+                    b.ToTable("EmployeePermissions", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.EmployeeRole", b =>
@@ -312,7 +511,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -322,7 +521,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -349,7 +548,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -365,7 +564,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId", "FacilityId", "EmployeeId", "Deleted", "RoleId");
 
-                    b.ToTable("EmployeeRole");
+                    b.ToTable("EmployeeRoles", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.EmploymentAttachment", b =>
@@ -384,7 +583,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -394,7 +593,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -412,7 +611,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -426,7 +625,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId", "FacilityId", "EmployeeId", "Deleted");
 
-                    b.ToTable("EmploymentAttachment");
+                    b.ToTable("EmploymentAttachments", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.Permission", b =>
@@ -435,7 +634,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -445,7 +644,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -466,7 +665,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -476,19 +675,57 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("Deleted");
 
-                    b.ToTable("Permission");
+                    b.HasIndex("PermissionType");
+
+                    b.ToTable("Permissions", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = new Guid("123e4567-e89b-12d3-a456-426655440000"),
-                            CreatedAt = new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Local),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "System",
                             Deleted = false,
                             Description = "Permission type has no effect on any entity on the system",
                             DisplayName = "None",
                             PermissionType = 0,
-                            UpdatedAt = new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Local),
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            UpdatedBy = "System"
+                        },
+                        new
+                        {
+                            Id = new Guid("323e4567-e89b-12d3-a456-426655440000"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "System",
+                            Deleted = false,
+                            Description = "Create and update the biography of a registered Patient only.",
+                            DisplayName = "Manage Patient Biography",
+                            PermissionType = 1,
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            UpdatedBy = "System"
+                        },
+                        new
+                        {
+                            Id = new Guid("223e4567-e89b-12d3-a456-426655440000"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "System",
+                            Deleted = false,
+                            Description = "Create and update the visitations of a registered Patient only.",
+                            DisplayName = "Manage Patient Visitations",
+                            PermissionType = 2,
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            UpdatedBy = "System"
+                        },
+                        new
+                        {
+                            Id = new Guid("423e4567-e89b-12d3-a456-426655440000"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "System",
+                            Deleted = false,
+                            Description = "Create and update the vitals of a registered Patient only.",
+                            DisplayName = "Manage Patient Vitals",
+                            PermissionType = 3,
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             UpdatedBy = "System"
                         });
                 });
@@ -499,7 +736,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -509,7 +746,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -524,7 +761,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -534,18 +771,18 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("Deleted");
 
-                    b.ToTable("Role");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = new Guid("223e4567-e89b-12d3-a456-426655440000"),
-                            CreatedAt = new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Local),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "System",
                             Deleted = false,
                             Description = "",
                             Title = "General Nurse",
-                            UpdatedAt = new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Local),
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             UpdatedBy = "System"
                         });
                 });
@@ -559,7 +796,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -569,7 +806,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -581,7 +818,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -595,7 +832,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId", "FacilityId");
 
-                    b.ToTable("FacilityManager");
+                    b.ToTable("FacilityManagers", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Facilities.OrganizationalFacility", b =>
@@ -609,7 +846,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -619,7 +856,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -638,7 +875,8 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("LogoUrl")
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("MainTelephone")
                         .IsRequired()
@@ -653,7 +891,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -671,7 +909,523 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("OrganizationalFacility");
+                    b.ToTable("OrganizationalFacilities", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Consultation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Room")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("VisitationId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.HasIndex("VisitationId");
+
+                    b.HasIndex("TenantId", "FacilityId", "Deleted");
+
+                    b.ToTable("Consultations", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Identification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CountryOfIssue")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly>("DateExpires")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("DateIssued")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IdentificationNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PlaceOfIssue")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId", "Deleted", "Type");
+
+                    b.ToTable("Identifications", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Patient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PostGps")
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UniqueIdentifier")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "FacilityId", "Deleted");
+
+                    b.ToTable("Patients", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.PatientDrug", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("ActivelyTaking")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("AmountPaidPerDrug")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("AssociatedDiagnosis")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AssociatedVisit")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("DrugId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ExtraNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PatientId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("QuantityTaking")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("PatientId1");
+
+                    b.HasIndex("DrugId", "AssociatedVisit", "AssociatedDiagnosis", "ActivelyTaking");
+
+                    b.HasIndex("TenantId", "FacilityId", "PatientId", "Deleted");
+
+                    b.ToTable("PatientDrugs", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.PatientHealthDiagnosis", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("ActivelyTreated")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("AssociatedVisit")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DiagnosedByFullname")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ExtraNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("FirstDiagnosedAt")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("HealthDiagnosisId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("HealthFacilityDiagnosedAt")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("WasDeclaredRecoveredAt")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HealthDiagnosisId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("TenantId", "FacilityId", "PatientId", "HealthDiagnosisId", "Deleted");
+
+                    b.ToTable("PatientHealthDiagnoses", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.PatientLabTest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExtraNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("LabTestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("MeasuredValue")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
+                    b.Property<Guid>("RecommendedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SupervisedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("VisitationId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LabTestId");
+
+                    b.HasIndex("VisitationId");
+
+                    b.HasIndex("TenantId", "FacilityId", "VisitationId", "SupervisedById", "LabTestId", "RecommendedById", "Deleted");
+
+                    b.ToTable("PatientLabTests", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.PatientVital", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("MeasurementValue")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("VisitationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VitalItemId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VitalItemId");
+
+                    b.HasIndex("VisitationId", "VitalItemId");
+
+                    b.HasIndex("TenantId", "FacilityId", "Deleted");
+
+                    b.ToTable("PatientVitals", (string)null);
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Visitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("VisitingReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("TenantId", "FacilityId", "PatientId", "Deleted");
+
+                    b.ToTable("Visitations", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.Subscription", b =>
@@ -683,7 +1437,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<float>("CostPerMonth")
                         .HasColumnType("real");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -693,7 +1447,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -709,7 +1463,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -717,7 +1471,21 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscriptions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("133e4567-e89b-12d3-a456-426655440000"),
+                            CostPerMonth = 0f,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "System",
+                            Deleted = false,
+                            Description = "Free subscription plan with all basic support.",
+                            Title = "Free",
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            UpdatedBy = "System"
+                        });
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.Tenant", b =>
@@ -731,7 +1499,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -741,7 +1509,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -770,7 +1538,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -781,7 +1549,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.HasIndex("UniqueIdentifier")
                         .IsUnique();
 
-                    b.ToTable("Tenants");
+                    b.ToTable("Tenants", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantManager", b =>
@@ -793,7 +1561,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -803,7 +1571,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -812,7 +1580,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -822,7 +1590,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId", "ApplicationUserId");
 
-                    b.ToTable("TenantManagers");
+                    b.ToTable("TenantManagers", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantSubscription", b =>
@@ -831,7 +1599,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
@@ -841,7 +1609,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeletedBy")
@@ -866,7 +1634,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -878,7 +1646,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("TenantSubscriptions");
+                    b.ToTable("TenantSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.ApplicationUser.LinkInvitation", b =>
@@ -967,10 +1735,121 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Facilities.FacilityManager", b =>
                 {
                     b.HasOne("Triumph.HealthMs.Core.Models.Facilities.OrganizationalFacility", "OrganizationalFacility")
-                        .WithMany()
+                        .WithMany("FacilityManagers")
                         .HasForeignKey("FacilityId");
 
                     b.Navigation("OrganizationalFacility");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Consultation", b =>
+                {
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Visitation", "Visitation")
+                        .WithMany("Consultations")
+                        .HasForeignKey("VisitationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Visitation");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Identification", b =>
+                {
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Patient", "Patient")
+                        .WithMany("Identifications")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.PatientDrug", b =>
+                {
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Patient", null)
+                        .WithMany("PatientDrugs")
+                        .HasForeignKey("PatientId1");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.PatientHealthDiagnosis", b =>
+                {
+                    b.HasOne("Triumph.HealthMs.Core.Models.Common.HealthDiagnosis", "HealthDiagnosis")
+                        .WithMany()
+                        .HasForeignKey("HealthDiagnosisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Patient", null)
+                        .WithMany("PatientHealthDiagnoses")
+                        .HasForeignKey("HealthDiagnosisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HealthDiagnosis");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.PatientLabTest", b =>
+                {
+                    b.HasOne("Triumph.HealthMs.Core.Models.Common.LabTest", "LabTest")
+                        .WithMany()
+                        .HasForeignKey("LabTestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Visitation", "Visitation")
+                        .WithMany("PatientLabTests")
+                        .HasForeignKey("VisitationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LabTest");
+
+                    b.Navigation("Visitation");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.PatientVital", b =>
+                {
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Visitation", "Visitation")
+                        .WithMany("PatientVitals")
+                        .HasForeignKey("VisitationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Triumph.HealthMs.Core.Models.Common.VitalItem", "VitalItem")
+                        .WithMany()
+                        .HasForeignKey("VitalItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Visitation");
+
+                    b.Navigation("VitalItem");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Visitation", b =>
+                {
+                    b.HasOne("Triumph.HealthMs.Core.Models.Patients.Patient", "Patient")
+                        .WithMany("Visitations")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.TenantManager", b =>
@@ -1010,6 +1889,31 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Navigation("EmployeeRoles");
 
                     b.Navigation("EmploymentAttachments");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Facilities.OrganizationalFacility", b =>
+                {
+                    b.Navigation("FacilityManagers");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Patient", b =>
+                {
+                    b.Navigation("Identifications");
+
+                    b.Navigation("PatientDrugs");
+
+                    b.Navigation("PatientHealthDiagnoses");
+
+                    b.Navigation("Visitations");
+                });
+
+            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Patients.Visitation", b =>
+                {
+                    b.Navigation("Consultations");
+
+                    b.Navigation("PatientLabTests");
+
+                    b.Navigation("PatientVitals");
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Tenants.Tenant", b =>

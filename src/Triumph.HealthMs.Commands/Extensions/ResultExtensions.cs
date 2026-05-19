@@ -20,7 +20,6 @@ public static class ResultExtensions
 
         return result.Status switch
         {
-            201 => Results.CreatedAtRoute(routeName, routeValues, result),
             204 => Results.NoContent(),
             _ => Results.Ok(result)
         };

@@ -1,6 +1,6 @@
 namespace Triumph.HealthMs.Core.Features.PatientManagement.AddVisit;
 
-public abstract record AddVisitCommand(string VisitReason)
+public record AddVisitCommand(string VisitReason)
 {
     public Guid PatientId { get; set; }
 }

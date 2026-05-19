@@ -4,6 +4,8 @@ public sealed class PatientLabTestConfigurations : IEntityTypeConfiguration<Pati
 {
     public void Configure(EntityTypeBuilder<PatientLabTest> builder)
     {
+        builder.ToTable("PatientLabTests");
+
         builder.HasKey(x => x.Id);
 
         builder.HasIndex(x => new

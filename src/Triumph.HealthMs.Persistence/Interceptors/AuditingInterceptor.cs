@@ -27,7 +27,7 @@ public sealed class AuditingInterceptor : SaveChangesInterceptor
             if (entry.State == EntityState.Deleted)
             {
                 entry.Entity.Deleted = true;
-                entry.Entity.DeletedAt = DateTime.UtcNow;
+                entry.Entity.DeletedAt = DateTimeOffset.UtcNow;
                 entry.Entity.DeletedBy = _loggedInUserService.UserId ?? entry.Entity.DeletedBy;
                 entry.State = EntityState.Modified; // Mark as modified to update the entity instead of deleting it
             }

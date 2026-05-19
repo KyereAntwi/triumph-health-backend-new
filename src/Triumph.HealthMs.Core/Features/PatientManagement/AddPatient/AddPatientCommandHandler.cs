@@ -10,7 +10,7 @@ public sealed class AddPatientCommandHandler(
 {
     public async Task<BaseResponse<Guid>> HandleAsync(AddPatientCommand command, CancellationToken cancellationToken = default)
     {
-        if (! await permissionService.UserHasRequiredPermission(PermissionType.MANAGE_PATIENT_BIOGRAPHY, cancellationToken))
+        if (! await permissionService.UserHasRequiredPermission(PermissionType.ManagePatientBiography, cancellationToken))
         {
             return new BaseResponse<Guid>
             {

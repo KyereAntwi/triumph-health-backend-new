@@ -4,6 +4,8 @@ public sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<Appl
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
+        builder.ToTable("ApplicationUsers");
+        
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.UserId)

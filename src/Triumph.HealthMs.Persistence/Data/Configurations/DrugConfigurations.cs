@@ -4,6 +4,8 @@ public sealed class DrugConfigurations : IEntityTypeConfiguration<Drug>
 {
     public void Configure(EntityTypeBuilder<Drug> builder)
     {
+        builder.ToTable("Drugs");
+
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Name)
             .IsRequired()

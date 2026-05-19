@@ -11,4 +11,9 @@
       <ProjectReference Include="..\Triumph.HealthMs.Persistence\Triumph.HealthMs.Persistence.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="HotChocolate.AspNetCore" Version="16.0.3" />
+      <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="16.0.3" />
+    </ItemGroup>
+
 </Project>

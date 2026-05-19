@@ -4,6 +4,8 @@ public sealed class PatientDrugConfigurations : IEntityTypeConfiguration<Patient
 {
     public void Configure(EntityTypeBuilder<PatientDrug> builder)
     {
+        builder.ToTable("PatientDrugs");
+
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.Patient)

@@ -1,8 +1,9 @@
 namespace Triumph.HealthMs.Persistence.Services;
 
-public class PermissionService (
+public sealed class PermissionService (
     IEmployeeManagementDbContext dbContext, 
     IApplicationUserManagementDbContext appUserDbContext,
+    ITenantManagementDbContext tenantManagementDbContext,
     ILoggedInUserService loggedInUserService)
     : IPermissionService
 {
@@ -22,5 +23,14 @@ public class PermissionService (
             })
             .AnyAsync(e => e.ApplicationUserId == appUserId.Id && e.Permissions.Contains(permissionType),
                 cancellationToken);
+    }
+
+    public async Task<bool> HasActiveSubscription(CancellationToken cancellationToken)
+    {
+        return await tenantManagementDbContext
+            .TenantSubscriptions
+            .AnyAsync(ts => ts.TenantId == Guid.Parse(loggedInUserService.TenantId!) &&
+                            ts.IsActive && 
+                            ts.ExpiresAt.Date >= DateTime.UtcNow.Date, cancellationToken);
     }
 }

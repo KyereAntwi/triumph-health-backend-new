@@ -4,6 +4,8 @@ public sealed class EmploymentAttachmentConfigurations : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<EmploymentAttachment> builder)
     {
+        builder.ToTable("EmploymentAttachments");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.AttachmentType)

@@ -14,6 +14,8 @@ public sealed class UpdateFacilityEndpoint : ICarterModule
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status400BadRequest)
             .HasApiVersion(1)
+            .AddEndpointFilter<TenantIdRequiredFilter>()
+            .AddEndpointFilter<RequiresActiveSubscription>()
             .AddEndpointFilter<MustBeAManagerFilter>()
             .RequireAuthorization();
     }

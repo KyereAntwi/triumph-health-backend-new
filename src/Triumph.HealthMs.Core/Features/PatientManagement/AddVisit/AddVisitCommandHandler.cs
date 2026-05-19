@@ -7,7 +7,7 @@ public sealed class AddVisitCommandHandler(
 {
     public async Task<BaseResponse<Guid>> HandleAsync(AddVisitCommand command, CancellationToken cancellationToken = default)
     {
-        if (!await permissionService.UserHasRequiredPermission(PermissionType.MANAGE_PATIENT_VISITS, cancellationToken))
+        if (!await permissionService.UserHasRequiredPermission(PermissionType.ManagePatientVisits, cancellationToken))
         {
             return new BaseResponse<Guid>
             {

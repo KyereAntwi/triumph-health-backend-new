@@ -4,6 +4,8 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
 {
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
+        builder.ToTable("Employees");
+
         builder.HasKey(x => x.Id);
         builder.Property(x => x.ApplicationUserId)
             .IsRequired();

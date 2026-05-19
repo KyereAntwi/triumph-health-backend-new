@@ -4,6 +4,8 @@ public sealed class TenantSubscriptionConfigurations : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<TenantSubscription> builder)
     {
+        builder.ToTable("TenantSubscriptions");
+
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.Tenant)

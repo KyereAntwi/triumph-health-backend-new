@@ -24,6 +24,8 @@ public sealed class AddTenantAccountEndpoint : ICarterModule
         var result = await handle.HandleAsync(command);
         return result.ToHttpResult(
             routeName: "GetTenantByIdentifier",
-            routeValues: new { Id = result.Data!.TenantId });
+            routeValues: result is { IsSuccess: true, Data: not null } ? 
+                new { Id = result.Data!.TenantId } : 
+                null);
     }
 }

@@ -17,6 +17,7 @@ global using Triumph.HealthMs.Core.Features.EmployeeManagement.UpdateEmployeePer
 global using Triumph.HealthMs.Core.Features.EmployeeManagement.UpdateEmployeeRole;
 global using Triumph.HealthMs.Core.Features.FacilityManagement.AddFacility;
 global using Triumph.HealthMs.Core.Features.FacilityManagement.AddManager;
+global using Triumph.HealthMs.Core.Features.FacilityManagement.GetTenantFacilities;
 global using Triumph.HealthMs.Core.Features.FacilityManagement.RemoveManager;
 global using Triumph.HealthMs.Core.Features.FacilityManagement.UpdateFacility;
 global using Triumph.HealthMs.Core.Features.PatientManagement.AddPatient;

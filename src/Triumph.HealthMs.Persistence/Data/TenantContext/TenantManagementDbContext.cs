@@ -13,29 +13,28 @@ public sealed class TenantManagementDbContext : DbContext, ITenantManagementDbCo
     
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {
-        foreach (var entityEntry in ChangeTracker.Entries<TenantEntity>())
+        foreach (var entityEntry in ChangeTracker.Entries<AuditableEntity>())
         {
             switch (entityEntry.State)
             {
                 case EntityState.Added:
-                    entityEntry.Entity.CreatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.CreatedBy;
-                    entityEntry.Entity.CreatedAt = DateTime.UtcNow;
-                    entityEntry.Entity.TenantId = (entityEntry.Entity.TenantId != null && entityEntry.Entity.TenantId != Guid.Empty)
-                        ? entityEntry.Entity.TenantId
-                        : Guid.Parse(_loggedInUserService.TenantId!);
+                    entityEntry.Entity.CreatedBy = _loggedInUserService.UserId!;
+                    entityEntry.Entity.CreatedAt = DateTimeOffset.UtcNow;
                     break;
                 case EntityState.Modified:
                     entityEntry.Entity.UpdatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.UpdatedBy;
-                    entityEntry.Entity.UpdatedAt = DateTime.UtcNow;
+                    entityEntry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
                     break;
             }
         }
-
+        
         foreach (var entityEntry in ChangeTracker.Entries<TenantEntity>())
         {
-            if (entityEntry.State == EntityState.Added && !string.IsNullOrEmpty(_loggedInUserService.TenantId))
+            if (entityEntry.State == EntityState.Added)
             {
-                entityEntry.Entity.TenantId = Guid.Parse(_loggedInUserService.TenantId);
+                entityEntry.Entity.TenantId = (entityEntry.Entity.TenantId != null && entityEntry.Entity.TenantId != Guid.Empty)
+                    ? entityEntry.Entity.TenantId
+                    : Guid.Parse(_loggedInUserService.TenantId!);
             }
         }
         
@@ -46,7 +45,9 @@ public sealed class TenantManagementDbContext : DbContext, ITenantManagementDbCo
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TenantManagementDbContext).Assembly);
         ApplyDeletedFilter(modelBuilder);
-        ApplyTenantFilter(modelBuilder);
+        
+        if (!string.IsNullOrEmpty(_loggedInUserService.TenantId)) ApplyTenantFilter(modelBuilder);
+        
         base.OnModelCreating(modelBuilder);
     }
     
