@@ -1,5 +1,3 @@
-using HotChocolate.AspNetCore;
-
 namespace Triumph.HealthMs.Host.DI;
 
 public static class PipelineStartup

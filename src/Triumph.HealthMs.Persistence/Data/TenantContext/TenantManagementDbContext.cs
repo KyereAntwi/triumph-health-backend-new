@@ -18,7 +18,7 @@ public sealed class TenantManagementDbContext : DbContext, ITenantManagementDbCo
             switch (entityEntry.State)
             {
                 case EntityState.Added:
-                    entityEntry.Entity.CreatedBy = _loggedInUserService.UserId!;
+                    entityEntry.Entity.CreatedBy = _loggedInUserService.UserId ?? entityEntry.Entity.CreatedBy;
                     entityEntry.Entity.CreatedAt = DateTimeOffset.UtcNow;
                     break;
                 case EntityState.Modified:

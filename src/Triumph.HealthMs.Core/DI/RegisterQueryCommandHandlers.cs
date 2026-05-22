@@ -1,5 +1,3 @@
-using Triumph.HealthMs.Core.Features.TenantManagement.GetTenants;
-
 namespace Triumph.HealthMs.Core.DI;
 
 public static class RegisterQueryCommandHandlers
@@ -39,6 +37,8 @@ public static class RegisterQueryCommandHandlers
             .AddScoped<ICommandHandler<UpdateEmployeePermissionsCommand, string>,
                 UpdateEmployeePermissionsCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateEmployeeRoleCommand, string>, UpdateEmployeeRoleCommandHandler>();
+        services
+            .AddScoped<IQueryHandler<GetAllEmployeesQuery, IEnumerable<EmployeeDto>>, GetAllEmployeesQueryHandler>();
         #endregion
 
         #region PatientManagement
@@ -48,6 +48,19 @@ public static class RegisterQueryCommandHandlers
         services.AddScoped<ICommandHandler<RemoveIdentificationCommand, string>, RemoveIdentificationCommandHandler>();
         services.AddScoped<ICommandHandler<AddVisitCommand, Guid>, AddVisitCommandHandler>();
         services.AddScoped<ICommandHandler<TakeVitalMeasurementCommand, string>, TakeVitalMeasurementCommandHandler>();
+        #endregion
+
+        #region GeneralManagement
+        services.AddScoped<IQueryHandler<GetAllPermissionsQuery, IEnumerable<PermissionDto>>, GetAllPermissionsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllSubscriptionsQuery, IEnumerable<SubscriptionDto>>, GetAllSubscriptionsQueryHandler>();
+        services.AddScoped<ICommandHandler<AddADrugCommand, Guid>, AddADrugCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAllDrugsQuery, IEnumerable<DrugDto>>, GetAllDrugsQueryHandler>();
+        services.AddScoped<ICommandHandler<AddHealthDiagnosisCommand, Guid>, AddHealthDiagnosisCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAllHealthDiagnosisQuery, IEnumerable<HealthDiagnosisDto>>, GetAllHealthDiagnosisQueryHandler>();
+        services.AddScoped<ICommandHandler<AddLabTestCommand, Guid>, AddLabTestCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAllLabTestsQuery, IEnumerable<LabTestDto>>, GetAllLabTestsQueryHandler>();
+        services.AddScoped<ICommandHandler<AddVitalItemCommand, Guid>, AddVitalItemCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAllVitalsQuery, IEnumerable<VitalItemDto>>, GetAllVitalsQueryHandler>();
         #endregion
         
         return services;

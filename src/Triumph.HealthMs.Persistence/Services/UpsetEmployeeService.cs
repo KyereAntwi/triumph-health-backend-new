@@ -22,7 +22,7 @@ public class UpsetEmployeeService(
         var applicationUser = new ApplicationUser
         {
             Id = Guid.CreateVersion7(),
-            UserId = "Unassigned",
+            UserId = Guid.NewGuid().ToString(),
             FirstName = command.FirstName,
             LastName = command.LastName,
             Gender = Enum.Parse<Gender>(command.Gender),
@@ -32,6 +32,7 @@ public class UpsetEmployeeService(
             Email = command.Email,
             PhoneNumber = command.PhoneNumber
         };
+        
         var invitation = new LinkInvitation
         {
             Id = Guid.CreateVersion7(),
@@ -46,7 +47,15 @@ public class UpsetEmployeeService(
             EmployedAt = DateOnly.Parse(command.EmployedAt),
             FacilityId = Guid.Parse(command.FacilityId)
         };
-        newEmployee.EmployeeRoles.Add(new EmployeeRole { RoleId = Guid.Parse(command.RoleId) });
+        
+        newEmployee.EmployeeRoles.Add(
+            new EmployeeRole
+            {
+                RoleId = Guid.Parse(command.RoleId),
+                EmployeeId = newEmployee.Id,
+                FacilityId = Guid.Parse(command.FacilityId)
+            });
+        
         foreach (var permission in permissionIds)
         {
             newEmployee.EmployeePermissions.Add(new EmployeePermission
@@ -56,40 +65,46 @@ public class UpsetEmployeeService(
                 FacilityId = Guid.Parse(command.FacilityId)
             });
         }
+        
+        var strategy = ((DbContext)dbContext).Database.CreateExecutionStrategy();
 
         try
         {
-            if (connection.State != System.Data.ConnectionState.Open)
-                await connection.OpenAsync(cancellationToken);
-
-            await using var tx = await connection.BeginTransactionAsync(cancellationToken);
-            await ((DbContext)applicationUserManagementDbContext).Database.UseTransactionAsync(tx, cancellationToken);
-            await ((DbContext)facilityManagementDbContext).Database.UseTransactionAsync(tx, cancellationToken);
-            await ((DbContext)dbContext).Database.UseTransactionAsync(tx, cancellationToken);
-
-            await applicationUserManagementDbContext.ApplicationUsers.AddAsync(applicationUser, cancellationToken);
-            await applicationUserManagementDbContext.LinkInvitations.AddAsync(invitation, cancellationToken);
-            await applicationUserManagementDbContext.SaveChangesAsync(cancellationToken);
-
-            if (command.SetAsFacilityManager)
+            await strategy.ExecuteAsync(async () =>
             {
-                var manager = new FacilityManager
+                if (connection.State != System.Data.ConnectionState.Open)
+                    await connection.OpenAsync(cancellationToken);
+
+                await using var tx = await connection.BeginTransactionAsync(cancellationToken);
+                
+                await ((DbContext)applicationUserManagementDbContext).Database.UseTransactionAsync(tx, cancellationToken);
+                await ((DbContext)facilityManagementDbContext).Database.UseTransactionAsync(tx, cancellationToken);
+                await ((DbContext)dbContext).Database.UseTransactionAsync(tx, cancellationToken);
+                
+                await applicationUserManagementDbContext.ApplicationUsers.AddAsync(applicationUser, cancellationToken);
+                await applicationUserManagementDbContext.LinkInvitations.AddAsync(invitation, cancellationToken);
+                await applicationUserManagementDbContext.SaveChangesAsync(cancellationToken);
+
+                if (command.SetAsFacilityManager)
                 {
-                    FacilityId = Guid.Parse(command.FacilityId),
-                    ApplicationUserId = applicationUser.Id
-                };
-                await facilityManagementDbContext.FacilityManagers.AddAsync(manager, cancellationToken);
-                await facilityManagementDbContext.SaveChangesAsync(cancellationToken);
-            }
+                    var manager = new FacilityManager
+                    {
+                        FacilityId = Guid.Parse(command.FacilityId),
+                        ApplicationUserId = applicationUser.Id
+                    };
+                    await facilityManagementDbContext.FacilityManagers.AddAsync(manager, cancellationToken);
+                    await facilityManagementDbContext.SaveChangesAsync(cancellationToken);
+                }
 
-            await dbContext.Employees.AddAsync(newEmployee, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
+                await dbContext.Employees.AddAsync(newEmployee, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
 
-            await tx.CommitAsync(cancellationToken);
+                await tx.CommitAsync(cancellationToken);
+            });
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to persist employee. Command: {@Command}", command);
+            logger.LogError(e, "Failed to persist employee after execution strategy retries. Command: {@Command}", command);
             return ("An error occurred while adding the employee.", null, null);
         }
         finally
@@ -115,35 +130,41 @@ public class UpsetEmployeeService(
                 "Some permissions in the command were not found in the database. Requested: {Requested}, Found: {Found}",
                 permissions.Length, permissionIds.Length);
 
+        var strategy = ((DbContext)dbContext).Database.CreateExecutionStrategy();
+
         try
         {
-            if (connection.State != System.Data.ConnectionState.Open)
-                await connection.OpenAsync(cancellationToken);
-
-            await using var tx = await connection.BeginTransactionAsync(cancellationToken);
-            await ((DbContext)dbContext).Database.UseTransactionAsync(tx, cancellationToken);
-
-            await dbContext
-                .EmployeePermissions
-                .Where(ep => ep.EmployeeId == employee.Id)
-                .ExecuteDeleteAsync(cancellationToken);
-
-            var employeePermissions = permissionIds.Select(id => new EmployeePermission
+            await strategy.ExecuteAsync(async () =>
             {
-                EmployeeId = employee.Id,
-                PermissionId = id,
-                FacilityId = employee.FacilityId
+                if (connection.State != System.Data.ConnectionState.Open)
+                    await connection.OpenAsync(cancellationToken);
+
+                await using var tx = await connection.BeginTransactionAsync(cancellationToken);
+                await ((DbContext)dbContext).Database.UseTransactionAsync(tx, cancellationToken);
+
+                await dbContext
+                    .EmployeePermissions
+                    .Where(ep => ep.EmployeeId == employee.Id)
+                    .ExecuteDeleteAsync(cancellationToken);
+
+                var employeePermissions = permissionIds.Select(id => new EmployeePermission
+                {
+                    EmployeeId = employee.Id,
+                    PermissionId = id,
+                    FacilityId = employee.FacilityId
+                });
+
+                await dbContext.EmployeePermissions.AddRangeAsync(employeePermissions, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                await tx.CommitAsync(cancellationToken);
             });
-
-            await dbContext.EmployeePermissions.AddRangeAsync(employeePermissions, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
-
-            await tx.CommitAsync(cancellationToken);
+            
             return null;
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to update employee permissions. Command: {@Command}", command);
+            logger.LogError(e, "Failed to update employee permissions after execution strategy retries. Command: {@Command}", command);
             return "An error occurred while updating employee permissions.";
         }
         finally

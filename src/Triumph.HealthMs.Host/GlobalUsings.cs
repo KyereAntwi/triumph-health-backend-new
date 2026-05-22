@@ -2,6 +2,7 @@
 
 global using Asp.Versioning;
 global using Carter;
+global using HotChocolate.AspNetCore;
 global using Microsoft.AspNetCore.Diagnostics;
 global using Microsoft.AspNetCore.HttpOverrides;
 global using Microsoft.EntityFrameworkCore;

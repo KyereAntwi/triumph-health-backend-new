@@ -19,14 +19,7 @@ public sealed class GetTenantsQueryHandler(
                 x.Email,
                 x.Address,
                 x.LogoUrl,
-                x.MainTelephone,
-                Subscriptions = x.TenantSubscriptions.Select(s => new
-                {
-                    s.Subscription!.Title,
-                    s.SubscriptionChargeRate,
-                    s.IsActive
-                }),
-                Managers = x.TenantManagers.Select(m => m.Id.ToString())
+                x.MainTelephone
             });
 
         if (!string.IsNullOrEmpty(query.TenantId))
@@ -43,10 +36,57 @@ public sealed class GetTenantsQueryHandler(
         {
             innerQuery = innerQuery.Where(t => t.OrganizationTitle.ToLower().Contains(query.SearchKey.ToLower()));
         }
-        
-        innerQuery = innerQuery.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize);
 
-        var list = await innerQuery
+        var pageSize = query.PageSize > 50 ? 50 : query.PageSize;
+        var tenants = await innerQuery
+            .Skip((query.Page - 1) * pageSize)
+            .Take(pageSize)
+            .ToArrayAsync(cancellationToken);
+
+        var tenantIds = tenants.Select(t => t.Id);
+        
+        Dictionary<Guid, List<TenantSubscriptionDto>>? subscriptions = null;
+        if (query.IncludeSubscriptions)
+        {
+            subscriptions = await dbContext
+                .TenantSubscriptions
+                .Where(ts => tenantIds.Contains(ts.TenantId))
+                .Select(s => new
+                {
+                    s.TenantId,
+                    s.Subscription!.Title,
+                    s.SubscriptionChargeRate,
+                    s.IsActive
+                })
+                .GroupBy(x => x.TenantId)
+                .ToDictionaryAsync(g => g.Key,
+                    g => g.Select(x =>
+                            new TenantSubscriptionDto(
+                                x.Title,
+                                x.SubscriptionChargeRate.ToString(),
+                                x.IsActive))
+                        .ToList(),
+                    cancellationToken);
+        }
+        
+        Dictionary<Guid, List <TenantManagerDto>> ? managers = null;
+        if (query.IncludeManagers)
+        {
+            managers = await dbContext
+                .TenantManagers
+                .Where(tm => tenantIds.Contains((Guid)tm.TenantId!))
+                .Select(m => new
+                {
+                    m.TenantId,
+                    m.Id
+                })
+                .GroupBy(x => (Guid)x.TenantId!)
+                .ToDictionaryAsync(g => g.Key, g => 
+                    g.Select(x => new TenantManagerDto(Id: x.Id.ToString())).ToList(), 
+                    cancellationToken);
+        }
+
+        var list = tenants
             .Select(t => new TenantDto
             {
                 Id = t.Id.ToString(),
@@ -56,12 +96,10 @@ public sealed class GetTenantsQueryHandler(
                 Address = t.Address,
                 LogoUrl = t.LogoUrl ?? string.Empty,
                 MainTelephone = t.MainTelephone,
-                Subscriptions = t.Subscriptions.Select(s => new TenantSubscriptionDto(
-                    Name: s.Title,
-                    SubscriptionChargeRate: s.SubscriptionChargeRate.ToString(),
-                    IsActive: s.IsActive)).ToList(),
-                Managers = t.Managers.Select(m => new TenantManagerDto(m)).ToList()
-            }).ToArrayAsync(cancellationToken);
+                
+                Subscriptions =  query.IncludeSubscriptions && subscriptions != null && subscriptions.TryGetValue(t.Id, out var subLists) ? subLists : [],
+                Managers = query.IncludeManagers && managers != null && managers.TryGetValue(t.Id, out var managersList) ? managersList : []
+            });
         
         return new BaseResponse<IEnumerable<TenantDto>>
         {

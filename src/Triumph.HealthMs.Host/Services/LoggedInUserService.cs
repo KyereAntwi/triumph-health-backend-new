@@ -1,9 +1,8 @@
 namespace Triumph.HealthMs.Host.Services;
 
-public class LoggedInUserService(
-    IHttpContextAccessor httpContextAccessor) : ILoggedInUserService
+public class LoggedInUserService(IHttpContextAccessor httpContextAccessor) : ILoggedInUserService
 {
-    private HttpContext HttpContext => httpContextAccessor.HttpContext ??  throw new UnauthorizedAccessException("User is missing");
+    private HttpContext HttpContext => httpContextAccessor.HttpContext ?? throw new UnauthorizedAccessException("User is missing");
 
     public string? UserId => HttpContext.User.FindFirst("sub")?.Value;
 

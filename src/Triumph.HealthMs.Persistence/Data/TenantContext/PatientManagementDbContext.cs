@@ -121,6 +121,4 @@ public sealed class PatientManagementDbContext : DbContext, IPatientManagementDb
     public DbSet<PatientLabTest> PatientLabTests => Set<PatientLabTest>();
     public DbSet<PatientVital> PatientVitals => Set<PatientVital>();
     public DbSet<Visitation> Visitations => Set<Visitation>();
-    public DbSet<HealthDiagnosis> HealthDiagnoses => Set<HealthDiagnosis>();
-    public DbSet<VitalItem> VitalItems => Set<VitalItem>();
 }

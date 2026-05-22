@@ -1,4 +1,4 @@
-namespace Triumph.HealthMs.Persistence.Data.ApplicationUserContext;
+namespace Triumph.HealthMs.Persistence.Data.CommonEntitiesContext;
 
 public sealed class ApplicationUserManagementDbContext : DbContext, IApplicationUserManagementDbContext
 {

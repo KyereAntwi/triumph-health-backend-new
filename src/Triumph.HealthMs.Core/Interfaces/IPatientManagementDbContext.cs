@@ -10,7 +10,5 @@ public interface IPatientManagementDbContext
     DbSet<PatientLabTest> PatientLabTests { get; }
     DbSet<PatientVital> PatientVitals { get; }
     DbSet<Visitation> Visitations { get; }
-    DbSet<HealthDiagnosis> HealthDiagnoses { get; }
-    DbSet<VitalItem> VitalItems { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
