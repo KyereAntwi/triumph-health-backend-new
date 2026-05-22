@@ -4,6 +4,7 @@ public sealed class PermissionService (
     IEmployeeManagementDbContext dbContext, 
     IApplicationUserManagementDbContext appUserDbContext,
     ITenantManagementDbContext tenantManagementDbContext,
+    IFacilityManagementDbContext facilityManagementDbContext,
     ILoggedInUserService loggedInUserService)
     : IPermissionService
 {
@@ -32,5 +33,42 @@ public sealed class PermissionService (
             .AnyAsync(ts => ts.TenantId == Guid.Parse(loggedInUserService.TenantId!) &&
                             ts.IsActive && 
                             ts.ExpiresAt.Date >= DateTime.UtcNow.Date, cancellationToken);
+    }
+
+    public async Task<bool> UserIsAManager(CancellationToken cancellationToken)
+    {
+        var existingUser = await appUserDbContext
+            .ApplicationUsers
+            .Select(a => new
+            {
+                a.UserId,
+                a.Id
+            })
+            .FirstOrDefaultAsync(a => a.UserId == loggedInUserService.UserId, cancellationToken);
+        
+        if (!string.IsNullOrEmpty(loggedInUserService.TenantId))
+        {
+            var isTenantAManager = await tenantManagementDbContext
+                .TenantManagers
+                .AnyAsync(m =>
+                    m.ApplicationUserId == existingUser!.Id && m.TenantId == Guid.Parse(loggedInUserService.TenantId),
+                    cancellationToken);
+            
+            if (isTenantAManager)
+            {
+                return true;
+            }
+        }
+
+        if (string.IsNullOrEmpty(loggedInUserService.FacilityId)) return false;
+        
+        var isFacilityManager = await facilityManagementDbContext
+            .FacilityManagers
+            .AnyAsync(f =>
+                f.ApplicationUserId == existingUser!.Id &&
+                f.FacilityId == Guid.Parse(loggedInUserService.FacilityId),
+                cancellationToken);
+        
+        return isFacilityManager;
     }
 }

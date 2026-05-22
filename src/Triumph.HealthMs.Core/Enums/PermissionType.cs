@@ -5,5 +5,6 @@ public enum PermissionType
     None,
     ManagePatientBiography,
     ManagePatientVisits,
-    ManagePatientVitals
+    ManagePatientVitals,
+    ManageHealthInternals
 }

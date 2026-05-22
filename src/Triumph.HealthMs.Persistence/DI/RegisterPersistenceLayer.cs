@@ -14,44 +14,23 @@ public static class RegisterPersistenceLayer
         // Shared connection so all tenant contexts can enlist in a single transaction
         services.AddScoped(_ => new NpgsqlConnection(connectionString));
 
-        services.AddDbContext<ApplicationUserManagementDbContext>((sp, options) =>
-        {
-            options.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>())
-                .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
-        });
-        services.AddScoped<IApplicationUserManagementDbContext>(
-            sp => sp.GetRequiredService<ApplicationUserManagementDbContext>());
+        services.AddDbContext<ApplicationUserManagementDbContext>(ConfigureDbContext);
+        services.AddScoped<IApplicationUserManagementDbContext>(sp => sp.GetRequiredService<ApplicationUserManagementDbContext>());
 
-        services.AddDbContext<TenantManagementDbContext>((sp, options) =>
-        {
-            options.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>())
-                .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
-        });
-        services.AddScoped<ITenantManagementDbContext>(
-            sp => sp.GetRequiredService<TenantManagementDbContext>());
+        services.AddDbContext<TenantManagementDbContext>(ConfigureDbContext);
+        services.AddScoped<ITenantManagementDbContext>(sp => sp.GetRequiredService<TenantManagementDbContext>());
 
-        services.AddDbContext<FacilityManagementDbContext>((sp, opt) =>
-        {
-            opt.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>())
-                .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
-        });
-        services.AddScoped<IFacilityManagementDbContext>(
-            sp => sp.GetRequiredService<FacilityManagementDbContext>());
+        services.AddDbContext<FacilityManagementDbContext>(ConfigureDbContext);
+        services.AddScoped<IFacilityManagementDbContext>(sp => sp.GetRequiredService<FacilityManagementDbContext>());
 
-        services.AddDbContext<EmployeeManagementDbContext>((sp, opt) =>
-        {
-            opt.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>())
-                .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
-        });
-        services.AddScoped<IEmployeeManagementDbContext>(
-            sp => sp.GetRequiredService<EmployeeManagementDbContext>());
+        services.AddDbContext<EmployeeManagementDbContext>(ConfigureDbContext);
+        services.AddScoped<IEmployeeManagementDbContext>(sp => sp.GetRequiredService<EmployeeManagementDbContext>());
 
-        services.AddDbContext<PatientManagementDbContext>((sp, opt) =>
-        {
-            opt.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>())
-                .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
-        });
+        services.AddDbContext<PatientManagementDbContext>(ConfigureDbContext);
         services.AddScoped<IPatientManagementDbContext>(sp => sp.GetRequiredService<PatientManagementDbContext>());
+
+        services.AddDbContext<CommonEntitiesDbContext>(ConfigureDbContext);
+        services.AddScoped<ICommonEntitiesDbContext>(sp => sp.GetRequiredService<CommonEntitiesDbContext>());
 
         services.AddMarten(options =>
         {
@@ -66,5 +45,20 @@ public static class RegisterPersistenceLayer
         services.AddScoped<IPatientUpsetService, PatientUpsetService>();
 
         return services;
+        
+        void ConfigureDbContext(
+            IServiceProvider sp,
+            DbContextOptionsBuilder options)
+        {
+            options.UseNpgsql(sp.GetRequiredService<NpgsqlConnection>(),
+                    postgresOptions =>
+                    {
+                        postgresOptions.EnableRetryOnFailure(
+                            maxRetryCount: 3,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorCodesToAdd: null);
+                    })
+                .AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
+        }
     }
 }

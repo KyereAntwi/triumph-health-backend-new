@@ -5,6 +5,7 @@ public sealed class AddAnEmployeeCommandHandler(
     IFacilityManagementDbContext facilityManagementDbContext,
     ILoggedInUserService loggedInUserService,
     IUpsetEmployeeService upsetEmployeeService,
+    IApplicationUserManagementDbContext applicationUserManagementDbContext,
     IPublishEndpoint publishEndpoint,
     ILogger<AddAnEmployeeCommandHandler> logger)
     : ICommandHandler<AddAnEmployeeCommand, Guid>
@@ -22,6 +23,22 @@ public sealed class AddAnEmployeeCommandHandler(
                 Status = 400,
                 Message = "Validation Failed",
                 Errors = validationResult.Errors.Select(e => e.ErrorMessage)
+            };
+        }
+
+        var isEmployeeExisting = await applicationUserManagementDbContext
+            .ApplicationUsers
+            .AnyAsync(e => e.Email == command.Email || e.PhoneNumber == command.PhoneNumber,
+            cancellationToken);
+
+        if (isEmployeeExisting)
+        {
+            return new BaseResponse<Guid>
+            {
+                IsSuccess = false,
+                Status = 409,
+                Message = "Conflict",
+                Errors = ["Employee with this email or phone number already exists"]
             };
         }
 

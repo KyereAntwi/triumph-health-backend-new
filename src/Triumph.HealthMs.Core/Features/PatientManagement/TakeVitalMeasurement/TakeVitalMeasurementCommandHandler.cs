@@ -3,7 +3,8 @@ namespace Triumph.HealthMs.Core.Features.PatientManagement.TakeVitalMeasurement;
 public sealed class TakeVitalMeasurementCommandHandler (
     ILoggedInUserService loggedInUserService,
     IPermissionService permissionService,
-    IPatientManagementDbContext dbContext)
+    IPatientManagementDbContext dbContext,
+    ICommonEntitiesDbContext commonEntitiesDbContext)
     : ICommandHandler<TakeVitalMeasurementCommand, string>
 {
     public async Task<BaseResponse<string>> HandleAsync(TakeVitalMeasurementCommand command, CancellationToken cancellationToken = default)
@@ -60,7 +61,7 @@ public sealed class TakeVitalMeasurementCommandHandler (
         }
 
         var vitalItemIds = command.VitalMeasurements.Select(vm => Guid.Parse(vm.VitalItemId)).ToList();
-        var existingVitalItemIds = await dbContext.VitalItems
+        var existingVitalItemIds = await commonEntitiesDbContext.VitalItems
             .Where(v => vitalItemIds.Contains(v.Id))
             .Select(v => v.Id)
             .ToListAsync(cancellationToken);

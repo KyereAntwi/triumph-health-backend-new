@@ -24,7 +24,7 @@ global using Triumph.HealthMs.Core.Models.Employees;
 global using Triumph.HealthMs.Core.Models.Facilities;
 global using Triumph.HealthMs.Core.Models.Patients;
 global using Triumph.HealthMs.Core.Models.Tenants;
-global using Triumph.HealthMs.Persistence.Data.ApplicationUserContext;
+global using Triumph.HealthMs.Persistence.Data.CommonEntitiesContext;
 global using Triumph.HealthMs.Persistence.Data.TenantContext;
 global using Triumph.HealthMs.Persistence.Interceptors;
 global using Triumph.HealthMs.Persistence.Services;

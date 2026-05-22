@@ -11,7 +11,7 @@ public sealed class PatientUpsetService(
         var applicationUser = new ApplicationUser
         {
             Id = Guid.CreateVersion7(),
-            UserId = "Unassigned",
+            UserId = Guid.NewGuid().ToString(),
             FirstName = command.FirstName,
             LastName = command.LastName,
             Gender = Enum.Parse<Gender>(command.Gender),
@@ -48,33 +48,38 @@ public sealed class PatientUpsetService(
             }
         }
 
+        var strategy = ((DbContext)dbContext).Database.CreateExecutionStrategy();
+
         try
         {
-            if (connection.State != System.Data.ConnectionState.Open)
-                await connection.OpenAsync(cancellationToken);
-            
-            await using var tx = await connection.BeginTransactionAsync(cancellationToken);
-            await ((DbContext)applicationUserManagementDbContext).Database.UseTransactionAsync(tx, cancellationToken);
-            await ((DbContext)dbContext).Database.UseTransactionAsync(tx, cancellationToken);
-            
-            await applicationUserManagementDbContext.ApplicationUsers.AddAsync(applicationUser, cancellationToken);
-
-            if (command.SendAccountLinkageInvitation)
+            await strategy.ExecuteAsync(async () =>
             {
-                var invitation = new LinkInvitation
-                {
-                    Id = Guid.CreateVersion7(),
-                    ApplicationUserId = applicationUser.Id,
-                    InvitedEntityType = nameof(Employee)
-                };
-                await applicationUserManagementDbContext.LinkInvitations.AddAsync(invitation, cancellationToken);
-            }
+                if (connection.State != System.Data.ConnectionState.Open)
+                    await connection.OpenAsync(cancellationToken);
             
-            await applicationUserManagementDbContext.SaveChangesAsync(cancellationToken);
-            await dbContext.Patients.AddAsync(patient, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
+                await using var tx = await connection.BeginTransactionAsync(cancellationToken);
+                await ((DbContext)applicationUserManagementDbContext).Database.UseTransactionAsync(tx, cancellationToken);
+                await ((DbContext)dbContext).Database.UseTransactionAsync(tx, cancellationToken);
+            
+                await applicationUserManagementDbContext.ApplicationUsers.AddAsync(applicationUser, cancellationToken);
 
-            await tx.CommitAsync(cancellationToken);
+                if (command.SendAccountLinkageInvitation)
+                {
+                    var invitation = new LinkInvitation
+                    {
+                        Id = Guid.CreateVersion7(),
+                        ApplicationUserId = applicationUser.Id,
+                        InvitedEntityType = nameof(Employee)
+                    };
+                    await applicationUserManagementDbContext.LinkInvitations.AddAsync(invitation, cancellationToken);
+                }
+            
+                await applicationUserManagementDbContext.SaveChangesAsync(cancellationToken);
+                await dbContext.Patients.AddAsync(patient, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                await tx.CommitAsync(cancellationToken);
+            });
         }
         catch (Exception e)
         {
@@ -114,21 +119,25 @@ public sealed class PatientUpsetService(
         userAccount.Nationality = Enum.Parse<Nationality>(command.Nationality);
         userAccount.DateOfBirth = DateOnly.Parse(command.DateOfBirth);
 
+        var strategy = ((DbContext)dbContext).Database.CreateExecutionStrategy();
         try
         {
-            if (connection.State != System.Data.ConnectionState.Open)
-                await connection.OpenAsync(cancellationToken);
+            await strategy.ExecuteAsync(async () =>
+            {
+                if (connection.State != System.Data.ConnectionState.Open)
+                    await connection.OpenAsync(cancellationToken);
 
-            await using var tx = await connection.BeginTransactionAsync(cancellationToken);
-            await ((DbContext)applicationUserManagementDbContext).Database.UseTransactionAsync(tx, cancellationToken);
-            await ((DbContext)dbContext).Database.UseTransactionAsync(tx, cancellationToken);
+                await using var tx = await connection.BeginTransactionAsync(cancellationToken);
+                await ((DbContext)applicationUserManagementDbContext).Database.UseTransactionAsync(tx, cancellationToken);
+                await ((DbContext)dbContext).Database.UseTransactionAsync(tx, cancellationToken);
 
-            dbContext.Patients.Update(patient);
-            await dbContext.SaveChangesAsync(cancellationToken);
-            applicationUserManagementDbContext.ApplicationUsers.Update(userAccount);
-            await applicationUserManagementDbContext.SaveChangesAsync(cancellationToken);
+                dbContext.Patients.Update(patient);
+                await dbContext.SaveChangesAsync(cancellationToken);
+                applicationUserManagementDbContext.ApplicationUsers.Update(userAccount);
+                await applicationUserManagementDbContext.SaveChangesAsync(cancellationToken);
 
-            await tx.CommitAsync(cancellationToken);
+                await tx.CommitAsync(cancellationToken);
+            });
         }
         catch (Exception e)
         {

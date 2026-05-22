@@ -727,6 +727,18 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                             PermissionType = 3,
                             UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             UpdatedBy = "System"
+                        },
+                        new
+                        {
+                            Id = new Guid("423e4568-e89b-12d3-a456-426655440000"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "System",
+                            Deleted = false,
+                            Description = "Add to Health related issues like drugs, health diagnosis etc. Mostly for health professionals like Doctors.",
+                            DisplayName = "Manage Health Internals",
+                            PermissionType = 4,
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            UpdatedBy = "System"
                         });
                 });
 

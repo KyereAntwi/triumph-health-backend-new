@@ -8,7 +8,8 @@ public static class RegisterQueriesLayer
             .AddAuthorization()
             .AddQueryType<QueryBase>()
             .AddTypeExtension<HealthCheckQuery>()
-            .AddTypeExtension<TenantsQueries>();
+            .AddTypeExtension<TenantsQueries>()
+            .AddTypeExtension<EmployeesQueries>();
         
         return services;
     }

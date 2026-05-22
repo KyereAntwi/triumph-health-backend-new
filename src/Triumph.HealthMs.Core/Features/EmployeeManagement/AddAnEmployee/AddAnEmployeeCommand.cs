@@ -88,7 +88,7 @@ public class AddAnEmployeeCommandValidator : AbstractValidator<AddAnEmployeeComm
         RuleForEach(x => x.Permissions)
             .Must(x => Enum.TryParse<PermissionType>(x, out _))
             .WithMessage("Permission must be a valid permission")
-            .When(x => x.Permissions != null && !x.Permissions.Any());
+            .When(x => x.Permissions != null && x.Permissions.Any());
 
         RuleFor(x => x.RoleId)
             .NotEmpty()

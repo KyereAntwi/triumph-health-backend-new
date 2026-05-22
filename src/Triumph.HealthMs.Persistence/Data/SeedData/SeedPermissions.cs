@@ -55,6 +55,19 @@ public sealed class SeedPermissions : IEntityTypeConfiguration<Permission>
                 PermissionType = PermissionType.ManagePatientVitals,
                 Description = "Create and update the vitals of a registered Patient only.",
                 DisplayName = "Manage Patient Vitals"
+            },
+            
+            new Permission
+            {
+                Id = Guid.Parse("423e4568-e89b-12d3-a456-426655440000"),
+                CreatedBy = "System",
+                CreatedAt = DateTimeOffset.Parse("Sat, 09 May 2026 20:22:30 GMT"),
+                UpdatedAt = DateTimeOffset.Parse("Sat, 09 May 2026 20:22:30 GMT"),
+                UpdatedBy = "System",
+                Deleted = false,
+                PermissionType = PermissionType.ManageHealthInternals,
+                Description = "Add to Health related issues like drugs, health diagnosis etc. Mostly for health professionals like Doctors.",
+                DisplayName = "Manage Health Internals"
             }
         ]);
     }

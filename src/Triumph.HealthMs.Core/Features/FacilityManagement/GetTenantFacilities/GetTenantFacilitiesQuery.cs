@@ -4,7 +4,8 @@ public record GetTenantFacilitiesQuery(
     int Page,
     int PageSize,
     string SearchKey,
-    string TenantId);
+    string TenantId,
+    bool IncludeManagers);
 
 public record TenantFacilityDto(
     string Id,
@@ -14,5 +15,13 @@ public record TenantFacilityDto(
     string LogoUrl,
     string MainTelephone,
     string Description,
-    string EstablishedAt,
-    IEnumerable<string> FacilityManagerIds);
+    string EstablishedAt)
+{
+    public IEnumerable<string> Managers { get; set; } = [];
+}
+
+public record GetTenantFacilitiesRequest(
+    int Page = 1,
+    int PageSize = 10,
+    string SearchKey = "",
+    string TenantId = "");

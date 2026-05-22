@@ -28,7 +28,11 @@ public class UserResourceResolverMiddleware
         {
             if (!await applicationUserManagementDbContext.ApplicationUsers.AnyAsync(a =>
                     a.UserId == loggedInUserService.UserId))
+            {
+                if (context.Request.Path.StartsWithSegments("/graphql"))
+                    throw new GraphQLRequestException("No account registered for user");
                 throw new UnauthorizedAccessException("No account registered for user");
+            }
         }
 
         await _next(context);
