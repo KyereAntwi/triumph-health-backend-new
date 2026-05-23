@@ -3,7 +3,7 @@ namespace Triumph.HealthMs.ExternalServices.DI;
 public static class RegisterExternalServicesLayer
 {
     public static IServiceCollection AddExternalServicesLayer(this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration, IHostEnvironment environment)
     {
         services.AddAuthentication("Bearer")
             .AddJwtBearer(options =>
@@ -47,15 +47,13 @@ public static class RegisterExternalServicesLayer
             });
         services.AddAuthorization();
 
-        var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
         services.AddMassTransit(config =>
         {
             config.SetKebabCaseEndpointNameFormatter();
             config.AddConsumers(typeof(RegisterExternalServicesLayer).Assembly);
             
             var rabbitMqHost = configuration["RabbitMQ:HostName"];
-            if (string.IsNullOrEmpty(rabbitMqHost) || env == "Development")
+            if (string.IsNullOrEmpty(rabbitMqHost) || environment.IsDevelopment())
             {
                 config.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
             }
@@ -72,6 +70,36 @@ public static class RegisterExternalServicesLayer
                 });
             }
         });
+        
+        if (environment.IsDevelopment())
+        {
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheService, InMemoryCacheService>();
+        }
+        else
+        {
+            var redisConnection = configuration.GetConnectionString("Redis") 
+                                  ?? throw new InvalidOperationException("Redis connection string is required.");
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnection;
+                options.InstanceName = "hms:";
+            });
+
+            services.AddHybridCache(options =>
+            {
+                options.MaximumPayloadBytes = 1024 * 1024;
+                options.MaximumKeyLength = 512;
+                options.DefaultEntryOptions = new HybridCacheEntryOptions
+                {
+                    Expiration = TimeSpan.FromMinutes(10),
+                    LocalCacheExpiration = TimeSpan.FromMinutes(2)
+                };
+            });
+
+            services.AddSingleton<ICacheService, HybridCacheService>();
+        }
         
         return services;
     }

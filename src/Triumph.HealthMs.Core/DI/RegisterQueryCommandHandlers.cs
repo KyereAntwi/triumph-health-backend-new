@@ -62,6 +62,13 @@ public static class RegisterQueryCommandHandlers
         services.AddScoped<ICommandHandler<AddVitalItemCommand, Guid>, AddVitalItemCommandHandler>();
         services.AddScoped<IQueryHandler<GetAllVitalsQuery, IEnumerable<VitalItemDto>>, GetAllVitalsQueryHandler>();
         #endregion
+
+        #region AppConfigs
+        services.AddScoped<IQueryHandler<object, UserInformationDto>, GetUserConfigsQueryHandler>();
+        services.AddScoped<IQueryHandler<object, TenantInformationDto>, GetTenantConfigsQueryHandler>();
+        services.AddScoped<IQueryHandler<object, FacilityInformationDto>, GetFacilityConfigsQueryHandler>();
+        services.AddScoped<IQueryHandler<object, RoleDto>, GetUserRoleConfigsQueryHandler>();
+        #endregion
         
         return services;
     }
