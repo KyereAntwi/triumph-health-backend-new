@@ -57,10 +57,10 @@ public static class ServicesStartup
             .MinimumLevel.Debug()
             .WriteTo.Console()
             .CreateLogger();
-        
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-        if (environment == "Development")
+        var environment = builder.Environment;
+
+        if (environment.IsDevelopment())
         {
             builder.Host.UseSerilog((_, _, configuration) =>
             {
@@ -96,7 +96,7 @@ public static class ServicesStartup
         
         // register layers
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddExternalServicesLayer(builder.Configuration);
+        builder.Services.AddExternalServicesLayer(builder.Configuration, builder.Environment);
         builder.Services.AddPersistenceLayer(builder.Configuration);
         builder.Services.AddQueryCommandHandlers();
         builder.Services.AddCommandServices();

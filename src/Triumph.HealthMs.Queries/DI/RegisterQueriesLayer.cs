@@ -9,7 +9,8 @@ public static class RegisterQueriesLayer
             .AddQueryType<QueryBase>()
             .AddTypeExtension<HealthCheckQuery>()
             .AddTypeExtension<TenantsQueries>()
-            .AddTypeExtension<EmployeesQueries>();
+            .AddTypeExtension<EmployeesQueries>()
+            .AddTypeExtension<AppConfigurationQueries>();
         
         return services;
     }

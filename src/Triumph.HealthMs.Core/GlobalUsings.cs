@@ -9,6 +9,7 @@ global using Microsoft.Extensions.Logging;
 global using Triumph.HealthMs.Core.CQRS;
 global using Triumph.HealthMs.Core.Enums;
 global using Triumph.HealthMs.Core.Events;
+global using Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 global using Triumph.HealthMs.Core.Features.ApplicationUser.AddAUserAccount;
 global using Triumph.HealthMs.Core.Features.ApplicationUser.LinkUserToExistingAccount;
 global using Triumph.HealthMs.Core.Features.ApplicationUser.UpdateUserInfomation;

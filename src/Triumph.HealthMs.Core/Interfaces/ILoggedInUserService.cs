@@ -5,4 +5,5 @@ public interface ILoggedInUserService
     string? UserId { get; }
     string? TenantId { get; }
     string? FacilityId { get; }
+    string? FacilityUrlPrefix { get; }
 }

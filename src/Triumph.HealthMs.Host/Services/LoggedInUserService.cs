@@ -6,23 +6,26 @@ public class LoggedInUserService(IHttpContextAccessor httpContextAccessor) : ILo
 
     public string? UserId => HttpContext.User.FindFirst("sub")?.Value;
 
-    public string? TenantId
-    {
-        get
-        {
-            return HttpContext.Request.Headers["x-ms-tenant-id"].FirstOrDefault() ??
-                   HttpContext.User.Claims.FirstOrDefault(c => c.Type == "tenant_id")?.Value ??
-                   null;
-        }
-    }
+    public string? TenantId => HttpContext.Request.Headers["x-ms-tenant-id"].FirstOrDefault() ?? null;
 
-    public string? FacilityId
+    public string? FacilityId => HttpContext.Request.Headers["x-ms-facility-id"].FirstOrDefault() ?? null;
+
+    public string? FacilityUrlPrefix
     {
         get
         {
-            return HttpContext.Request.Headers["x-ms-facility-id"].FirstOrDefault() ??
-                   HttpContext.User.Claims.FirstOrDefault(c => c.Type == "facility_id")?.Value ??
-                   null;
+            var host = HttpContext.Request.Host.Host;
+            
+            if (host.Contains("localhost"))
+            {
+                var localhostParts = host.Split('.');
+                return localhostParts.Length > 1
+                    ? localhostParts[0]
+                    : null;
+            }
+            
+            var parts = host.Split('.');
+            return parts.Length < 3 ? null : parts[0];
         }
     }
 }
