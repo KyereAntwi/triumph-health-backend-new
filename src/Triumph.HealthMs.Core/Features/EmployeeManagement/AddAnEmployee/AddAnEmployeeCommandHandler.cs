@@ -67,6 +67,18 @@ public sealed class AddAnEmployeeCommandHandler(
                 Errors = ["Selected facility was not found"]
             };
         }
+        
+        var isDepartmentExisting = await dbContext.Departments.AnyAsync(d => d.Id == Guid.Parse(command.DepartmentId), cancellationToken);
+        if (!isDepartmentExisting)
+        {
+            return new BaseResponse<Guid>
+            {
+                IsSuccess = false,
+                Status = 400,
+                Message = "Not Found",
+                Errors = ["Selected department was not found"]
+            };
+        }
 
         var (error, employeeId, linkId) = await upsetEmployeeService.UpsetEmployeeDetailsAsync(command, cancellationToken);
 

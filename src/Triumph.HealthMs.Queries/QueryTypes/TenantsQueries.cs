@@ -1,7 +1,8 @@
 namespace Triumph.HealthMs.Queries.QueryTypes;
 
+[Authorize]
 [ExtendObjectType<QueryBase>]
-public class TenantsQueries
+public class TenantsQueries(ICacheService cacheService)
 {
     [Authorize(Roles = ["SuperAdmin"])]
     public async Task<IEnumerable<TenantDto>> AllTenants(
@@ -25,8 +26,7 @@ public class TenantsQueries
         var result = await handler.HandleAsync(query, cancellationToken);
         return result.Data!;
     }
-
-    [Authorize]
+    
     public async Task<TenantDto> SingleTenant(
         IResolverContext resolverContext,
         IQueryHandler<GetTenantsQuery, IEnumerable<TenantDto>> handler,
@@ -63,6 +63,7 @@ public class TenantsQueries
             : throw new GraphQLRequestException("Tenant not found");
     }
     
+    [AllowAnonymous]
     public async Task<IEnumerable<TenantFacilityDto>> Facilities(
         GetTenantFacilitiesRequest? request,
         IResolverContext context,
@@ -78,7 +79,20 @@ public class TenantsQueries
             TenantId: request?.TenantId ?? string.Empty,
             includeManagers);
         
-        var result = await handler.HandleAsync(query, cancellationToken);
+        var result = await cacheService.GetOrCreateAsync(
+            CacheKeys.Facilities(),
+            async token => await handler.HandleAsync(query, token),
+            absoluteExpiry: TimeSpan.FromMinutes(30),
+            cancellationToken);
+        
+        return result.Data!;
+    }
+    
+    public async Task<IEnumerable<DepartmentDto>> Departments(
+        IQueryHandler<object, IEnumerable<DepartmentDto>> handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(new object(), cancellationToken);
         return result.Data!;
     }
 }

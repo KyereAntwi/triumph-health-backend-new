@@ -14,8 +14,8 @@ src/
 ├── Triumph.HealthMs.Core              # Domain models, commands, events, and business logic
 ├── Triumph.HealthMs.Persistence       # EF Core DbContexts and migrations
 ├── Triumph.HealthMs.Commands          # Carter module endpoints (write side)
-├── Triumph.HealthMs.Queries           # Carter module endpoints (read side)
-└── Triumph.HealthMs.ExternalServices  # Auth0 JWT integration and MassTransit/RabbitMQ
+├── Triumph.HealthMs.Queries           # GraphQL with HotChocalate (read side)
+└── Triumph.HealthMs.ExternalServices  # Auth0 JWT integration, MassTransit/RabbitMQ, Caching
 
 tests/
 └── Triumph.HealthMs.UnitTests         # xUnit unit tests
@@ -184,6 +184,15 @@ All endpoints are versioned under `/api/v1`. Responses follow a standard envelop
 | `POST` | `/api/v1/employees`                  | Required | Add an employee                 |
 | `PUT`  | `/api/v1/employees/{id}/permissions` | Required | Update an employee's permission |
 | `PUT`  | `/api/v1/employees/{id}/roles`       | Required | Update an employee's roles      |
+
+### Patients
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/v1/patients` | Required | Create a new patient record |
+| `GET` | `/api/v1/patients/{id}` | Required | Retrieve a patient record by ID |
+| `PUT` | `/api/v1/patients/{id}` | Required | Update an existing patient record |
+| `DELETE` | `/api/v1/patients/{id}` | Required | Delete a patient record |
 
 ---
 

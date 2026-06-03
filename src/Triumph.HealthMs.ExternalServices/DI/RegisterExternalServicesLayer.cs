@@ -50,7 +50,7 @@ public static class RegisterExternalServicesLayer
         services.AddMassTransit(config =>
         {
             config.SetKebabCaseEndpointNameFormatter();
-            config.AddConsumers(typeof(RegisterExternalServicesLayer).Assembly);
+            config.AddConsumers(typeof(PatientAddedEventHandler).Assembly);
             
             var rabbitMqHost = configuration["RabbitMQ:HostName"];
             if (string.IsNullOrEmpty(rabbitMqHost) || environment.IsDevelopment())
@@ -100,6 +100,30 @@ public static class RegisterExternalServicesLayer
 
             services.AddSingleton<ICacheService, HybridCacheService>();
         }
+
+        services.AddHttpClient("resend", client =>
+        {
+            client.BaseAddress = new Uri(configuration["Resend:BaseUrl"]!);
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {configuration["Resend:ApiKey"]}");
+            client.DefaultRequestHeaders.Add("Content-Type", "application/json");
+            client.DefaultRequestHeaders.Add("User-Agent", "Triumph Health Management System");
+        });
+
+        services.AddHttpClient("arkessel", client =>
+        {
+            client.BaseAddress = new Uri(configuration["Arkessel:BaseUrl"]!);
+            client.DefaultRequestHeaders.Add("api-key", configuration["Arkessel:ApiKey"]);
+            client.DefaultRequestHeaders.Add("Content-Type", "application/json");
+        });
+
+        
+        services.AddTransient<ISendMessage, MessagingServices>();
+        
+        services.AddSingleton<ResendSettings>();
+        services.Configure<ResendSettings>(configuration.GetSection("Resend"));
+        
+        services.AddSingleton<ArkesselSettings>();
+        services.Configure<ArkesselSettings>(configuration.GetSection("Arkessel"));
         
         return services;
     }

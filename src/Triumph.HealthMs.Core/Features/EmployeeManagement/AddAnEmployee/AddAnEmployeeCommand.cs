@@ -15,7 +15,8 @@ public record AddAnEmployeeCommand(
     string? EndedRoleAt,
     string EmployedAt,
     IEnumerable<string>? Permissions,
-    bool SetAsFacilityManager);
+    bool SetAsFacilityManager,
+    string DepartmentId);
 
 public class AddAnEmployeeCommandValidator : AbstractValidator<AddAnEmployeeCommand>
 {
@@ -98,6 +99,11 @@ public class AddAnEmployeeCommandValidator : AbstractValidator<AddAnEmployeeComm
         RuleFor(x => x.FacilityId)
             .NotEmpty()
             .WithMessage("Facility Id is required")
+            .NotNull();
+
+        RuleFor(x => x.DepartmentId)
+            .NotEmpty()
+            .WithMessage("Department id is required")
             .NotNull();
     }
 }

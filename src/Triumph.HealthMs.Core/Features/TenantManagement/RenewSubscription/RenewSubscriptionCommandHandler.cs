@@ -3,7 +3,6 @@ namespace Triumph.HealthMs.Core.Features.TenantManagement.RenewSubscription;
 public sealed class RenewSubscriptionCommandHandler(
     ILoggedInUserService loggedInUserService,
     ITenantManagementDbContext dbContext,
-    IApplicationUserManagementDbContext applicationUserDbContext,
     IPublishEndpoint publishEndpoint,
     ILogger<RenewSubscriptionCommandHandler> logger) 
     : ICommandHandler<RenewSubscriptionCommand, Guid>
