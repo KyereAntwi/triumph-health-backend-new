@@ -30,5 +30,15 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
         builder.HasMany(x => x.EmployeeActivities)
             .WithOne(a => a.Employee)
             .HasForeignKey(a => a.EmployeeId);
+
+        builder.HasOne(x => x.Department)
+            .WithMany(x => x.Employees)
+            .HasForeignKey(x => x.DepartmentId);
+
+        builder.HasIndex(x => x.DepartmentId);
+
+        builder.Property(x => x.UniqueIdentifier)
+            .HasMaxLength(10);
+        builder.HasIndex(x => x.UniqueIdentifier);
     }
 }

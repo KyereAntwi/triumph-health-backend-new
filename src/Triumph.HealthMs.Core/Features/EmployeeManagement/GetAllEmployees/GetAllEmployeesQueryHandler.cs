@@ -16,11 +16,18 @@ public sealed class GetAllEmployeesQueryHandler(
                 .Where(e => e.Id == employeeGuid);
         }
         
-        if (!string.IsNullOrWhiteSpace(query.Role))
+        if (!string.IsNullOrWhiteSpace(query.RoleId))
         {
             employeesQuery = employeesQuery
                 .Where(e => e.EmployeeRoles
-                    .Any(r => r.Role!.Title == query.Role));
+                    .OrderByDescending(er => er.CreatedAt)
+                    .FirstOrDefault()!.RoleId == Guid.Parse(query.RoleId));
+        }
+
+        if (!string.IsNullOrEmpty(query.DepartmentId))
+        {
+            employeesQuery = employeesQuery
+                .Where(e => e.DepartmentId == Guid.Parse(query.DepartmentId));
         }
         
         if (query.MonthOfBirth > 0)

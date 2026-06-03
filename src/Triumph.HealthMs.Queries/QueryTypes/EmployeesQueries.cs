@@ -1,9 +1,9 @@
 namespace Triumph.HealthMs.Queries.QueryTypes;
 
+[Authorize]
 [ExtendObjectType<QueryBase>]
 public class EmployeesQueries
 {
-    [Authorize]
     public async Task<IEnumerable<EmployeeDto>> GetAllEmployees(
         GetAllEmployeesRequest? request,
         IResolverContext context,
@@ -28,7 +28,8 @@ public class EmployeesQueries
         var query = new GetAllEmployeesQuery(
             request?.EmployeeId ?? string.Empty,
             request?.SearchKey ?? string.Empty,
-            request?.Role ?? string.Empty,
+            request?.RoleId ?? string.Empty,
+            request?.DepartmentId ?? string.Empty,
             request?.MonthOfBirth ?? 0,
             request?.Page ?? 1,
             request?.PageSize ?? 10,

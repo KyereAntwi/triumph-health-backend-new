@@ -23,6 +23,8 @@ public sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<Appl
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.HasIndex(x => new { x.FirstName, x.LastName });
+
         builder.Property(x => x.OtherNames)
             .HasMaxLength(50);
 
@@ -31,6 +33,8 @@ public sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<Appl
         builder.Property(x => x.PhoneNumber)
             .HasMaxLength(15)
             .IsRequired();
+
+        builder.HasIndex(x => new { x.Email, x.PhoneNumber });
 
         builder.Property(x => x.ProfileImageUrl)
             .HasMaxLength(255);

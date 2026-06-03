@@ -3,7 +3,8 @@ namespace Triumph.HealthMs.Core.Features.EmployeeManagement.GetAllEmployees;
 public record GetAllEmployeesRequest(
     string EmployeeId = "",
     string SearchKey = "",
-    string Role = "",
+    string RoleId = "",
+    string DepartmentId = "",
     int MonthOfBirth = 0,
     int Page = 1,
     int PageSize = 10);
@@ -11,7 +12,8 @@ public record GetAllEmployeesRequest(
 public record GetAllEmployeesQuery(
     string EmployeeId,
     string SearchKey,
-    string Role,
+    string RoleId,
+    string DepartmentId,
     int MonthOfBirth,
     int Page,
     int PageSize,

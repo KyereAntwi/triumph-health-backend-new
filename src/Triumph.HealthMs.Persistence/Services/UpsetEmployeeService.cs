@@ -45,7 +45,8 @@ public class UpsetEmployeeService(
             Id = Guid.CreateVersion7(),
             ApplicationUserId = applicationUser.Id,
             EmployedAt = DateOnly.Parse(command.EmployedAt),
-            FacilityId = Guid.Parse(command.FacilityId)
+            FacilityId = Guid.Parse(command.FacilityId),
+            DepartmentId = Guid.Parse(command.DepartmentId)
         };
         
         newEmployee.EmployeeRoles.Add(

@@ -42,6 +42,27 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Departments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Departments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Drugs",
                 columns: table => new
                 {
@@ -61,28 +82,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Drugs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EmployedAt = table.Column<DateOnly>(type: "date", nullable: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    FacilityId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -313,12 +312,14 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmployeeActivities",
+                name: "Employees",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Action = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UniqueIdentifier = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EmployedAt = table.Column<DateOnly>(type: "date", nullable: true),
+                    DepartmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -331,24 +332,24 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeActivities", x => x.Id);
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_EmployeeActivities_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Employees",
+                        name: "FK_Employees_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmploymentAttachments",
+                name: "FacilityLabTests",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AttachmentUrl = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    AttachmentType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    EmployeeId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    UniqueIdentifier = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: false),
+                    LabTestId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CurrentValue = table.Column<decimal>(type: "numeric", nullable: false),
+                    AdditionalFacilityNotes = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -356,22 +357,22 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<string>(type: "text", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
                     FacilityId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmploymentAttachments", x => x.Id);
+                    table.PrimaryKey("PK_FacilityLabTests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_EmploymentAttachments_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Employees",
+                        name: "FK_FacilityLabTests_LabTests_LabTestId",
+                        column: x => x.LabTestId,
+                        principalTable: "LabTests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_EmploymentAttachments_Employees_EmployeeId1",
-                        column: x => x.EmployeeId1,
-                        principalTable: "Employees",
+                        name: "FK_FacilityLabTests_OrganizationalFacilities_FacilityId",
+                        column: x => x.FacilityId,
+                        principalTable: "OrganizationalFacilities",
                         principalColumn: "Id");
                 });
 
@@ -550,6 +551,94 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TenantManagers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TenantManagers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TenantManagers_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TenantSubscriptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SubscriptionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SubscriptionChargeRate = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TenantSubscriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TenantSubscriptions_Subscriptions_SubscriptionId",
+                        column: x => x.SubscriptionId,
+                        principalTable: "Subscriptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TenantSubscriptions_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmployeeActivities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Action = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    FacilityId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeeActivities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmployeeActivities_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "EmployeePermissions",
                 columns: table => new
                 {
@@ -632,11 +721,14 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TenantManagers",
+                name: "EmploymentAttachments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AttachmentUrl = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    AttachmentType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    EmployeeId1 = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -644,51 +736,23 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<string>(type: "text", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true)
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    FacilityId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TenantManagers", x => x.Id);
+                    table.PrimaryKey("PK_EmploymentAttachments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TenantManagers_Tenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
+                        name: "FK_EmploymentAttachments_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EmploymentAttachments_Employees_EmployeeId1",
+                        column: x => x.EmployeeId1,
+                        principalTable: "Employees",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TenantSubscriptions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SubscriptionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SubscriptionChargeRate = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TenantSubscriptions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TenantSubscriptions_Subscriptions_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscriptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TenantSubscriptions_Tenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -808,7 +872,8 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 {
                     { new Guid("223e4567-e89b-12d3-a456-426655440000"), new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System", false, null, null, "Create and update the visitations of a registered Patient only.", "Manage Patient Visitations", 2, new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System" },
                     { new Guid("323e4567-e89b-12d3-a456-426655440000"), new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System", false, null, null, "Create and update the biography of a registered Patient only.", "Manage Patient Biography", 1, new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System" },
-                    { new Guid("423e4567-e89b-12d3-a456-426655440000"), new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System", false, null, null, "Create and update the vitals of a registered Patient only.", "Manage Patient Vitals", 3, new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System" }
+                    { new Guid("423e4567-e89b-12d3-a456-426655440000"), new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System", false, null, null, "Create and update the vitals of a registered Patient only.", "Manage Patient Vitals", 3, new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System" },
+                    { new Guid("423e4568-e89b-12d3-a456-426655440000"), new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System", false, null, null, "Add to Health related issues like drugs, health diagnosis etc. Mostly for health professionals like Doctors.", "Manage Health Internals", 4, new DateTimeOffset(new DateTime(2026, 5, 9, 20, 22, 30, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System" }
                 });
 
             migrationBuilder.InsertData(
@@ -825,6 +890,16 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 name: "IX_ApplicationUsers_Deleted",
                 table: "ApplicationUsers",
                 column: "Deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationUsers_Email_PhoneNumber",
+                table: "ApplicationUsers",
+                columns: new[] { "Email", "PhoneNumber" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationUsers_FirstName_LastName",
+                table: "ApplicationUsers",
+                columns: new[] { "FirstName", "LastName" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApplicationUsers_UserId",
@@ -846,6 +921,16 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 name: "IX_Consultations_VisitationId",
                 table: "Consultations",
                 column: "VisitationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departments_Name_Deleted",
+                table: "Departments",
+                columns: new[] { "Name", "Deleted" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departments_TenantId",
+                table: "Departments",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Drugs_Name_Deleted",
@@ -909,9 +994,19 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employees_DepartmentId",
+                table: "Employees",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_TenantId_FacilityId_Deleted",
                 table: "Employees",
                 columns: new[] { "TenantId", "FacilityId", "Deleted" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_UniqueIdentifier",
+                table: "Employees",
+                column: "UniqueIdentifier");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmploymentAttachments_EmployeeId",
@@ -927,6 +1022,31 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 name: "IX_EmploymentAttachments_TenantId_FacilityId_EmployeeId_Deleted",
                 table: "EmploymentAttachments",
                 columns: new[] { "TenantId", "FacilityId", "EmployeeId", "Deleted" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacilityLabTests_FacilityId",
+                table: "FacilityLabTests",
+                column: "FacilityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacilityLabTests_Id",
+                table: "FacilityLabTests",
+                column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacilityLabTests_LabTestId",
+                table: "FacilityLabTests",
+                column: "LabTestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacilityLabTests_TenantId_FacilityId_Deleted",
+                table: "FacilityLabTests",
+                columns: new[] { "TenantId", "FacilityId", "Deleted" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacilityLabTests_UniqueIdentifier",
+                table: "FacilityLabTests",
+                column: "UniqueIdentifier");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FacilityManagers_ApplicationUserId",
@@ -1123,6 +1243,9 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                 name: "EmploymentAttachments");
 
             migrationBuilder.DropTable(
+                name: "FacilityLabTests");
+
+            migrationBuilder.DropTable(
                 name: "FacilityManagers");
 
             migrationBuilder.DropTable(
@@ -1181,6 +1304,9 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tenants");
+
+            migrationBuilder.DropTable(
+                name: "Departments");
 
             migrationBuilder.DropTable(
                 name: "Patients");

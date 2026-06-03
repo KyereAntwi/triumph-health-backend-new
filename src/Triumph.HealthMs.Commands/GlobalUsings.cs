@@ -28,6 +28,7 @@ global using Triumph.HealthMs.Core.Features.PatientManagement.AddVisit;
 global using Triumph.HealthMs.Core.Features.PatientManagement.RemoveIdentification;
 global using Triumph.HealthMs.Core.Features.PatientManagement.TakeVitalMeasurement;
 global using Triumph.HealthMs.Core.Features.PatientManagement.UpdatePatient;
+global using Triumph.HealthMs.Core.Features.TenantManagement.AddDepartment;
 global using Triumph.HealthMs.Core.Features.TenantManagement.AddTenantAccount;
 global using Triumph.HealthMs.Core.Features.TenantManagement.AddTenantManager;
 global using Triumph.HealthMs.Core.Features.TenantManagement.RemoveTenantManager;

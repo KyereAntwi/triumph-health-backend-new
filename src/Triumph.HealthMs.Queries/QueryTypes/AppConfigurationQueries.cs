@@ -28,7 +28,7 @@ public class AppConfigurationQueries(
                 await cacheService.GetOrCreateAsync(
                     CacheKeys.UserProfile(loggedInUserService.UserId!),
                     async token => await userConfigHandler.HandleAsync(new object(), token),
-                    absoluteExpiry: TimeSpan.FromMinutes(10),
+                    absoluteExpiry: TimeSpan.FromDays(1),
                     cancellationToken);
 
             if (!userConfigs.IsSuccess)
@@ -43,7 +43,7 @@ public class AppConfigurationQueries(
                     await cacheService.GetOrCreateAsync(
                         CacheKeys.TenantProfile(loggedInUserService.UserId!),
                         async token => await tenantConfigHandler.HandleAsync(new object(), token),
-                        absoluteExpiry: TimeSpan.FromMinutes(10),
+                        absoluteExpiry: TimeSpan.FromDays(1),
                         cancellationToken);
             
             if (!tenantConfigs.IsSuccess)
@@ -58,7 +58,7 @@ public class AppConfigurationQueries(
                     await cacheService.GetOrCreateAsync(
                         CacheKeys.FacilityProfile(loggedInUserService.UserId!),
                         async token => await facilityConfigHandler.HandleAsync(new object(), token),
-                        absoluteExpiry: TimeSpan.FromMinutes(10),
+                        absoluteExpiry: TimeSpan.FromDays(1),
                         cancellationToken);
             
             if (!facilityConfigs.IsSuccess)
@@ -73,7 +73,7 @@ public class AppConfigurationQueries(
                     await cacheService.GetOrCreateAsync(
                         CacheKeys.RoleProfile(loggedInUserService.UserId!),
                         async token => await roleConfigHandler.HandleAsync(new object(), token),
-                        absoluteExpiry: TimeSpan.FromMinutes(10),
+                        absoluteExpiry: TimeSpan.FromDays(1),
                         cancellationToken);
             
             if (!roleConfigs.IsSuccess)
