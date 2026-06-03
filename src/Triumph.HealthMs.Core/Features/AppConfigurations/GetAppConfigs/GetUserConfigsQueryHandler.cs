@@ -24,12 +24,14 @@ public sealed class GetUserConfigsQueryHandler(
                 u.OtherNames,
                 u.LastName,
                 u.ProfileImageUrl,
-                u.Email
+                u.Email,
+                u.Title
             }).FirstOrDefaultAsync(cancellationToken);
         
 
         var result = new UserInformationDto(
-            userQuery!.FirstName,
+            userQuery!.Title,
+            userQuery.FirstName,
             userQuery.OtherNames,
             userQuery.LastName,
             userQuery.ProfileImageUrl ?? string.Empty,

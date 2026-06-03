@@ -33,7 +33,8 @@ public sealed class AddAUserAccountCommandHandler(
             Nationality = Enum.Parse<Nationality>(command.Nationality),
             DateOfBirth = DateOnly.Parse(command.DateOfBirth),
             Email = command.Email,
-            PhoneNumber = command.PhoneNumber
+            PhoneNumber = command.PhoneNumber,
+            Title = command.Title
         };
         
         await dbContext.ApplicationUsers.AddAsync(newUser, cancellationToken);

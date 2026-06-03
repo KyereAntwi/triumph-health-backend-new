@@ -72,6 +72,7 @@ public sealed class GetAllEmployeesQueryHandler(
             .Select(u => new
             {
                 u.Id,
+                u.Title,
                 u.FirstName,
                 u.LastName,
                 u.OtherNames,
@@ -168,7 +169,8 @@ public sealed class GetAllEmployeesQueryHandler(
             {
                 Id = e.Id.ToString(),
 
-                FirstName = user!.FirstName,
+                Title = user!.Title,
+                FirstName = user.FirstName,
                 LastName = user.LastName,
                 Gender = user.Gender.ToString(),
                 Nationality = user.Nationality.ToString(),

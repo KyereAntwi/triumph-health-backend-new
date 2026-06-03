@@ -10,6 +10,7 @@ public record ConfigsResponse
 }
 
 public record UserInformationDto(
+    string Title,
     string FirstName,
     string? OtherNames,
     string LastName,

@@ -11,6 +11,9 @@ public sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<Appl
         builder.Property(x => x.UserId)
             .IsRequired()
             .HasMaxLength(50);
+
+        builder.Property(x => x.Title)
+            .HasMaxLength(5);
         
         builder.HasIndex(x => x.UserId)
             .IsUnique();
@@ -27,6 +30,10 @@ public sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<Appl
 
         builder.Property(x => x.OtherNames)
             .HasMaxLength(50);
+        
+        builder.Property(x => x.Gender)
+            .HasMaxLength(6)
+            .IsRequired();
 
         builder.Property(x => x.Email)
             .HasMaxLength(255);
