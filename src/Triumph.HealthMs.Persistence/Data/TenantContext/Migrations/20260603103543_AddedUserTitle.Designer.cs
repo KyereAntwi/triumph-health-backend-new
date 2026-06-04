@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Triumph.HealthMs.Persistence.Data.TenantContext;
@@ -11,9 +12,11 @@ using Triumph.HealthMs.Persistence.Data.TenantContext;
 namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 {
     [DbContext(typeof(TenantManagementDbContext))]
-    partial class TenantManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260603103543_AddedUserTitle")]
+    partial class AddedUserTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,7 +60,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<int>("Gender")
-                        .HasMaxLength(6)
                         .HasColumnType("integer");
 
                     b.Property<string>("LastName")
@@ -636,76 +638,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.HasIndex("TenantId", "FacilityId", "EmployeeId", "Deleted", "RoleId");
 
                     b.ToTable("EmployeeRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.EmployeeShift", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("EndedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("FacilityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("ShiftDurationInHours")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ShiftType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("StartedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("DayOfWeek");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("ShiftType");
-
-                    b.HasIndex("TenantId", "FacilityId", "EmployeeId", "Deleted");
-
-                    b.ToTable("EmployeeShifts", (string)null);
                 });
 
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.EmploymentAttachment", b =>
@@ -1945,17 +1877,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.EmployeeShift", b =>
-                {
-                    b.HasOne("Triumph.HealthMs.Core.Models.Employees.Employee", "Employee")
-                        .WithMany("EmployeeShifts")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("Triumph.HealthMs.Core.Models.Employees.EmploymentAttachment", b =>
                 {
                     b.HasOne("Triumph.HealthMs.Core.Models.Employees.Employee", "Employee")
@@ -2148,8 +2069,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Navigation("EmployeePermissions");
 
                     b.Navigation("EmployeeRoles");
-
-                    b.Navigation("EmployeeShifts");
 
                     b.Navigation("EmploymentAttachments");
                 });

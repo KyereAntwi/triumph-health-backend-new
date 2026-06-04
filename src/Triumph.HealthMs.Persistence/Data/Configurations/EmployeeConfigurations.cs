@@ -40,5 +40,13 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
         builder.Property(x => x.UniqueIdentifier)
             .HasMaxLength(10);
         builder.HasIndex(x => x.UniqueIdentifier);
+        
+        builder.HasMany(x => x.EmployeeShifts)
+            .WithOne(es => es.Employee)
+            .HasForeignKey(es => es.EmployeeId);
+        
+        builder.Property(x => x.UniqueIdentifier)
+            .HasMaxLength(10)
+            .IsRequired();
     }
 }

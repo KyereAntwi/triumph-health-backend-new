@@ -13,16 +13,18 @@ public sealed class AddFacilityCommandValidator : AbstractValidator<AddFacilityC
 {
     public AddFacilityCommandValidator()
     {
+        // no spaces allowed
+        // only ('.' and '-') special characters are allowed
         RuleFor(x => x.UrlSuffix)
-            .NotEmpty().WithMessage("{PropertyName} is required")
-            .MaximumLength(15).WithMessage("{PropertyName} should not be more than 15 characters");
+            .NotEmpty().WithMessage("UrlSuffix is required")
+            .MaximumLength(30).WithMessage("UrlSuffix should not be more than 30 characters")
+            .Matches(@"^[a-zA-Z0-9.\-]+$").WithMessage("UrlSuffix contains invalid characters");
         
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name title is required")
             .NotNull()
             .MaximumLength(100).WithMessage("Name should not be more than 100 characters")
-            .MinimumLength(6).WithMessage("Name should not be less than 6 characters")
-            .Matches(@"^[a-zA-Z0-9\s.\-&']+$").WithMessage("Facility name contains invalid characters");
+            .MinimumLength(6).WithMessage("Name should not be less than 6 characters");
         
         RuleFor(x => x.Description)
             .MaximumLength(500).WithMessage("Description should not be more than 500 characters")

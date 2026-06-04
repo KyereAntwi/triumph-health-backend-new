@@ -15,6 +15,7 @@ public sealed class GetAllVitalsQueryHandler(
 
         var pageSize = query.PageSize > 50 ? 50 : query.PageSize;
         var pagedList = await innerQuery
+            .OrderByDescending(v => v.CreatedAt)
             .Skip((query.Page - 1) * pageSize)
             .Take(pageSize)
             .Select(v => new VitalItemDto(v.Id.ToString(), v.Name, v.Description))

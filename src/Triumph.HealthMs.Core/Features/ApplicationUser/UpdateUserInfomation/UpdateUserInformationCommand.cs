@@ -8,12 +8,19 @@ public record UpdateUserInformationCommand(
     string PhoneNumber,
     string Gender,
     string Nationality,
-    string DateOfBirth);
+    string DateOfBirth,
+    string Title);
 
 public class UpdateUserInformationCommandValidator : AbstractValidator<UpdateUserInformationCommand>
 {
     public UpdateUserInformationCommandValidator()
     {
+        RuleFor(x => x.Title)
+            .NotEmpty()
+            .WithMessage("Title is required")
+            .Must(x => Enum.TryParse<Title>(x, out _))
+            .WithMessage("Title is invalid");
+        
         RuleFor(x => x.FirstName)
             .NotEmpty()
             .WithMessage("First name is required")

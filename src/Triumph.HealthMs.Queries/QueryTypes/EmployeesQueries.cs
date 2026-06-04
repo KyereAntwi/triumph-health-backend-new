@@ -2,20 +2,23 @@ namespace Triumph.HealthMs.Queries.QueryTypes;
 
 [Authorize]
 [ExtendObjectType<QueryBase>]
-public class EmployeesQueries
+public class EmployeesQueries(
+    ILoggedInUserService loggedInUserService,
+    IPermissionService permissionService,
+    IApplicationUserManagementDbContext applicationUserManagementDbContext,
+    IEmployeeManagementDbContext employeeManagementDbContext)
 {
     public async Task<IEnumerable<EmployeeDto>> GetAllEmployees(
         GetAllEmployeesRequest? request,
         IResolverContext context,
-        ILoggedInUserService loggedInUserService,
-        IPermissionService permissionService,
         IQueryHandler<GetAllEmployeesQuery, IEnumerable<EmployeeDto>> handler,
-        IEmployeeManagementDbContext employeeManagementDbContext,
-        IApplicationUserManagementDbContext applicationUserManagementDbContext,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(loggedInUserService.TenantId))
             throw new GraphQLRequestException("Tenant Id missing");
+        
+        if (string.IsNullOrEmpty(loggedInUserService.FacilityId))
+            throw new GraphQLRequestException("Facility Id missing");
 
         if (!await permissionService.HasActiveSubscription(cancellationToken))
             throw new GraphQLRequestException("You do not have an active subscription");
@@ -24,6 +27,7 @@ public class EmployeesQueries
         var includePermissions = context.IsSelected("permissions");
         var includeAttachments = context.IsSelected("attachments");
         var includeActivities = context.IsSelected("activities");
+        var includeShifts = context.IsSelected("shifts");
 
         var query = new GetAllEmployeesQuery(
             request?.EmployeeId ?? string.Empty,
@@ -36,7 +40,8 @@ public class EmployeesQueries
             includeRoles,
             includePermissions,
             includeAttachments,
-            includeActivities);
+            includeActivities,
+            includeShifts);
         
         await ConfirmAccessToEmployeeDetails(query, 
             loggedInUserService, 
@@ -52,6 +57,50 @@ public class EmployeesQueries
         return result.Data!;
     }
 
+    public async Task<IEnumerable<ArchivedShiftDto>> EmployeeArchivedShifts(
+        GetEmployeeArchivedShiftsQuery request,
+        IQueryHandler<GetEmployeeArchivedShiftsQuery, IEnumerable<ArchivedShiftDto>> handler,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(loggedInUserService.TenantId))
+            throw new GraphQLRequestException("Tenant Id missing");
+        
+        if(string.IsNullOrEmpty(request.EmployeeId))
+            throw new GraphQLRequestException("Employee Id missing");
+        
+        var query = new GetAllEmployeesQuery(
+            request?.EmployeeId ?? string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            0,
+            request?.Page ?? 1,
+            request?.PageSize ?? 10,
+            false,
+            false,
+            false,
+            false,
+            true);
+        
+        await ConfirmAccessToEmployeeDetails(query, 
+            loggedInUserService, 
+            permissionService, 
+            employeeManagementDbContext, 
+            applicationUserManagementDbContext, 
+            cancellationToken);
+        
+        var result = await handler.HandleAsync(
+            new GetEmployeeArchivedShiftsQuery(
+                request?.EmployeeId ?? string.Empty,
+                request?.From ?? string.Empty,
+                request?.To ?? string.Empty,
+                request?.Page ?? 1,
+                request?.PageSize ?? 10), 
+            cancellationToken);
+        
+        return result.Data!;
+    }
+
     private static async Task ConfirmAccessToEmployeeDetails(
         GetAllEmployeesQuery query,
         ILoggedInUserService loggedInUserService, 
@@ -59,7 +108,7 @@ public class EmployeesQueries
         IEmployeeManagementDbContext employeeManagementDbContext,
         IApplicationUserManagementDbContext applicationUserManagementDbContext, CancellationToken cancellationToken)
     {
-        if (query is { IncludeActivities: false, IncludeAttachments: false, IncludePermissions: false, IncludeRoles: false })
+        if (query is { IncludeActivities: false, IncludeAttachments: false, IncludePermissions: false, IncludeRoles: false, IncludeShifts: false })
             return;
         
         if (await permissionService.UserIsAManager(cancellationToken)) return;

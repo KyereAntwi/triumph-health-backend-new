@@ -17,9 +17,12 @@ public sealed class GetAllHealthDiagnosisQueryHandler(
                       hd.Description.ToLower().Contains(search));
         }
         
+        var pageSize = query.PageSize > 50 ? 50 : query.PageSize;
+        
         var pagedList = await innerQuery
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
+            .OrderByDescending(hd => hd.CreatedAt)
+            .Skip((query.Page - 1) * pageSize)
+            .Take(pageSize)
             .Select(hd => new HealthDiagnosisDto(hd.Id.ToString(), hd.Name, hd.Description, hd.RecommendedPrescription ?? string.Empty))
             .ToArrayAsync(cancellationToken);
 

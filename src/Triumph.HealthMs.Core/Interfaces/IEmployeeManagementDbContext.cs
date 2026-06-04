@@ -10,5 +10,6 @@ public interface IEmployeeManagementDbContext
     public DbSet<Permission> Permissions { get; }
     public DbSet<Role> Roles { get; }
     public DbSet<Department> Departments { get; }
+    DbSet<EmployeeShift> EmployeeShifts { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

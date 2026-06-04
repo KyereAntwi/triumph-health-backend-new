@@ -8,12 +8,19 @@ public record AddAUserAccountCommand(
     string? OtherNames,
     string Gender,
     string Nationality,
-    string DateOfBirth);
+    string DateOfBirth,
+    string Title);
 
 public class AddAUserAccountCommandValidator : AbstractValidator<AddAUserAccountCommand>
 {
     public AddAUserAccountCommandValidator()
     {
+        RuleFor(x => x.Title)
+            .NotEmpty()
+            .WithMessage("Title is required")
+            .Must(x => Enum.TryParse<Title>(x, out _))
+            .WithMessage("Title is invalid");
+        
         RuleFor(x => x.FirstName)
             .NotEmpty()
             .WithMessage("First name is required")

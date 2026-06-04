@@ -45,6 +45,7 @@ public sealed class UpdateUserInformationCommandHandler(
         existingAccount.Gender = Enum.Parse<Gender>(command.Gender);
         existingAccount.Nationality = Enum.Parse<Nationality>(command.Nationality);
         existingAccount.DateOfBirth = DateOnly.Parse(command.DateOfBirth);
+        existingAccount.Title = command.Title;
         
         await dbContext.SaveChangesAsync(cancellationToken);
 

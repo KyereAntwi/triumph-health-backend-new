@@ -125,4 +125,5 @@ public sealed class EmployeeManagementDbContext : DbContext, IEmployeeManagement
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Department> Departments => Set<Department>();
+    public DbSet<EmployeeShift> EmployeeShifts => Set<EmployeeShift>();
 }

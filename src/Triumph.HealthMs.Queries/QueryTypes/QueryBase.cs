@@ -1,6 +1,5 @@
 namespace Triumph.HealthMs.Queries.QueryTypes;
 
-[Authorize]
 public class QueryBase(ICacheService cacheService)
 {
     [AllowAnonymous]
@@ -17,6 +16,7 @@ public class QueryBase(ICacheService cacheService)
         return result.Data!;
     }
     
+    [Authorize]
     [GraphQLDescription("Get all permissions in the system.")]
     public async Task<IEnumerable<PermissionDto>> EmployeePermissions(
         IQueryHandler<GetAllPermissionsQuery, IEnumerable<PermissionDto>> handler,
@@ -26,6 +26,7 @@ public class QueryBase(ICacheService cacheService)
         return result.Data!;
     }
     
+    [Authorize]
     [GraphQLDescription("Get all drugs in the system.")]
     public async Task<IEnumerable<DrugDto>> Drugs(
         GetAllDrugsQuery? query,
@@ -39,6 +40,7 @@ public class QueryBase(ICacheService cacheService)
         return result.Data!;
     }
     
+    [Authorize]
     [GraphQLDescription("Get all Health Diagnoses in the system.")]
     public async Task<IEnumerable<HealthDiagnosisDto>> HealthDiagnoses(
         GetAllHealthDiagnosisQuery? query,
@@ -52,6 +54,7 @@ public class QueryBase(ICacheService cacheService)
         return result.Data!;
     }
     
+    [Authorize]
     [GraphQLDescription("Get all lab tests in the system.")]
     public async Task<IEnumerable<LabTestDto>> LabTests(
         GetAllLabTestsQuery? query,
@@ -65,6 +68,7 @@ public class QueryBase(ICacheService cacheService)
         return result.Data!;
     }
     
+    [Authorize]
     [GraphQLDescription("Get all vital items that can be measured about a patient.")]
     public async Task<IEnumerable<VitalItemDto>> VitalItems(
         GetAllVitalsQuery? query,

@@ -16,14 +16,16 @@ public class UserResourceResolverMiddleware
         ITenantManagementDbContext tenantManagementDbContext,
         IFacilityManagementDbContext facilityManagementDbContext)
     {
-        if (context.User.Identity is not { IsAuthenticated: true })
+        if (context.User.Identity is not { IsAuthenticated: true } || 
+            (context.Request.Method.Equals("POST", StringComparison.CurrentCultureIgnoreCase) &&
+            context.Request.Path.StartsWithSegments("/api/v1/accounts")))
         {
             await _next(context);
             return;
         }
 
-        if (!await applicationUserManagementDbContext.ApplicationUsers.AnyAsync(a =>
-                a.UserId == loggedInUserService.UserId))
+        if (!await applicationUserManagementDbContext.ApplicationUsers
+                .AnyAsync(a => a.UserId == loggedInUserService.UserId))
         {
             if (context.Request.Path.StartsWithSegments("/graphql"))
                 throw new GraphQLRequestException("No account registered for user");

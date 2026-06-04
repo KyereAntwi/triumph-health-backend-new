@@ -17,7 +17,7 @@ public static class TenantOnboardingTemplate
             <ul>
                 <li><strong>Subscription Plan:</strong> {subscription}</li>
                 <li><strong>Expires At:</strong> {expiryDate:MMMM dd, yyyy}</li>
-                <li><strong>Charge Rate:</strong> ${rate:F2} per month</li>
+                <li><strong>Charge Rate:</strong> {rate.ToString()}</li>
             </ul>
             
             <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team at <a href='mailto:support@triumphhealth.com'>support@triumphhealth.com</a>.</p>

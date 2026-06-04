@@ -19,7 +19,8 @@ public sealed class GetTenantsQueryHandler(
                 x.Email,
                 x.Address,
                 x.LogoUrl,
-                x.MainTelephone
+                x.MainTelephone,
+                x.CreatedAt
             });
 
         if (!string.IsNullOrEmpty(query.TenantId))
@@ -39,6 +40,7 @@ public sealed class GetTenantsQueryHandler(
 
         var pageSize = query.PageSize > 50 ? 50 : query.PageSize;
         var tenants = await innerQuery
+            .OrderByDescending(x => x.CreatedAt)
             .Skip((query.Page - 1) * pageSize)
             .Take(pageSize)
             .ToArrayAsync(cancellationToken);
