@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Triumph.HealthMs.Persistence.Data.TenantContext;
@@ -11,9 +12,11 @@ using Triumph.HealthMs.Persistence.Data.TenantContext;
 namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
 {
     [DbContext(typeof(TenantManagementDbContext))]
-    partial class TenantManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260603144922_AddedEmployeeShift")]
+    partial class AddedEmployeeShift
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -666,7 +669,7 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("EndedAt")
+                    b.Property<DateTime>("EndedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("FacilityId")
@@ -678,14 +681,11 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                     b.Property<int>("ShiftType")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("StartedAt")
+                    b.Property<DateTime>("StartedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -694,8 +694,6 @@ namespace Triumph.HealthMs.Persistence.Data.TenantContext.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
 
                     b.HasIndex("DayOfWeek");
 

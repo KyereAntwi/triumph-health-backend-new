@@ -20,7 +20,8 @@ public record GetAllEmployeesQuery(
     bool IncludeRoles,
     bool IncludePermissions,
     bool IncludeAttachments,
-    bool IncludeActivities);
+    bool IncludeActivities,
+    bool IncludeShifts);
 
 public record EmployeeDto
 {
@@ -40,6 +41,7 @@ public record EmployeeDto
     public IEnumerable<string> Permissions { get; set; } = [];
     public IEnumerable<EmployeeAttachmentDto> Attachments { get; set; } = [];
     public IEnumerable<EmployeeActivityDto> Activities { get; set; } = [];
+    public IEnumerable<EmployeeShiftDto> Shifts { get; set; } = [];
 }
 
 public record EmployeeDtoForQuerying
@@ -51,6 +53,7 @@ public record EmployeeDtoForQuerying
     public IEnumerable<string> Permissions { get; set; } = [];
     public IEnumerable<EmployeeAttachmentDto> Attachments { get; set; } = [];
     public IEnumerable<EmployeeActivityDto> Activities { get; set; } = [];
+    public IEnumerable<EmployeeShiftDto> Shifts { get; set; } = [];
 }
 
 public record EmployeeRoleDto(
@@ -67,3 +70,9 @@ public record EmployeeActivityDto(
     string ActivityId, 
     string Action, 
     string? CreatedAt);
+public record EmployeeShiftDto(
+    string DayOfWeek,
+    int DurationInHours,
+    string ShiftType,
+    string? StartedAt,
+    string? EndedAt);

@@ -20,7 +20,8 @@ public sealed class GetTenantFacilitiesQueryHandler(
                 of.MainTelephone,
                 of.Description,
                 of.EstablishedAt,
-                of.TenantId
+                of.TenantId,
+                of.CreatedAt
             });
 
         if (!string.IsNullOrEmpty(query.SearchKey))
@@ -37,6 +38,7 @@ public sealed class GetTenantFacilitiesQueryHandler(
         
         var pageSize = query.PageSize > 50 ? 50 : query.PageSize;
         var facilities = await innerQuery
+            .OrderByDescending(of => of.CreatedAt)
             .Skip((query.Page - 1) * pageSize)
             .Take(pageSize)
             .ToArrayAsync(cancellationToken);

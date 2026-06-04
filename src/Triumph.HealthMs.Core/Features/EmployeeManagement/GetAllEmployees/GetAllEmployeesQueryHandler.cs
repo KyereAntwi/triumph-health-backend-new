@@ -39,6 +39,8 @@ public sealed class GetAllEmployeesQueryHandler(
             employeesQuery = employeesQuery.Where(e => temporalUsers.Contains(e.ApplicationUserId));
         }
         
+        // faulty query
+        // todo - fix this
         if (!string.IsNullOrWhiteSpace(query.SearchKey))
         {
             var search = query.SearchKey.ToLower();
@@ -161,6 +163,32 @@ public sealed class GetAllEmployeesQueryHandler(
                     cancellationToken);
         }
         
+        Dictionary<Guid, List<EmployeeShiftDto>>? shifts = null;
+        if (query.IncludeShifts)
+        {
+            // this is only returning active shifts - shifts that are not marked as deleted and distinct by the day of week
+            // basically maximum of seven shifts to be returned for employee
+            shifts = await empDbContext.EmployeeShifts
+                .Where(s => employeeIds.Contains(s.EmployeeId))
+                .GroupBy(s => new { s.EmployeeId, s.DayOfWeek })
+                .Select(g => g.First())
+                .Select(s => new
+                {
+                    s.EmployeeId,
+                    Shift = new EmployeeShiftDto(
+                        ConvertIntToDayOfWeek.Convert(s.DayOfWeek),
+                        s.ShiftDurationInHours,
+                        s.ShiftType.ToString(),
+                        s.StartedAt == null ? null : s.StartedAt.Value.ToShortTimeString(),
+                        s.EndedAt == null ? null : s.EndedAt.Value.ToShortTimeString())
+                })
+                .GroupBy(x => x.EmployeeId)
+                .ToDictionaryAsync(g => g.Key,
+                    g => g.Select(x => x.Shift).ToList(),
+                    cancellationToken);
+        }
+        
+        
         var result = employees.Select(e =>
         {
             users.TryGetValue(e.ApplicationUserId, out var user);
@@ -196,7 +224,11 @@ public sealed class GetAllEmployeesQueryHandler(
                 
                 Activities = query.IncludeActivities 
                              && activities != null 
-                             && activities.TryGetValue(e.Id, out var activityList) ? activityList : []
+                             && activities.TryGetValue(e.Id, out var activityList) ? activityList : [],
+                
+                Shifts = query.IncludeShifts 
+                          && shifts != null 
+                          && shifts.TryGetValue(e.Id, out var shiftList) ? shiftList : []
             };
         });
 

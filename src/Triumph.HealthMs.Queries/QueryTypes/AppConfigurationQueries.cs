@@ -1,11 +1,11 @@
 namespace Triumph.HealthMs.Queries.QueryTypes;
 
-[Authorize]
 [ExtendObjectType<QueryBase>]
 public class AppConfigurationQueries(
     ILoggedInUserService loggedInUserService,
     ICacheService cacheService)
 {
+    [Authorize]
     [GraphQLDescription("Get all configurations for the front end app.")]
     public async Task<ConfigsResponse> GetAppConfigurations(
         IResolverContext context,
