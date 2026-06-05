@@ -12,4 +12,5 @@ public class OrganizationalFacility : TenantEntity
     public DateOnly? EstablishedAt { get; set; }
 
     public ICollection<FacilityManager> FacilityManagers { get; set; } = [];
+    public ICollection<FacilityAnnouncement> FacilityAnnouncements { get; set; } = [];
 }

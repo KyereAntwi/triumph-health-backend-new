@@ -10,6 +10,7 @@ global using Triumph.HealthMs.Core.CQRS;
 global using Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 global using Triumph.HealthMs.Core.Features.EmployeeManagement.GetAllEmployees;
 global using Triumph.HealthMs.Core.Features.EmployeeManagement.GetEmployeeArchivedShifts;
+global using Triumph.HealthMs.Core.Features.FacilityManagement.GetFacilityAnnouncements;
 global using Triumph.HealthMs.Core.Features.FacilityManagement.GetTenantFacilities;
 global using Triumph.HealthMs.Core.Features.General.GetAllDrugs;
 global using Triumph.HealthMs.Core.Features.General.GetAllHealthDiagnosis;

@@ -90,4 +90,5 @@ public sealed class TenantManagementDbContext : DbContext, ITenantManagementDbCo
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<TenantSubscription> TenantSubscriptions => Set<TenantSubscription>();
     public DbSet<TenantManager> TenantManagers => Set<TenantManager>();
+    public DbSet<TenantAnnouncement> TenantAnnouncements => Set<TenantAnnouncement>();
 }

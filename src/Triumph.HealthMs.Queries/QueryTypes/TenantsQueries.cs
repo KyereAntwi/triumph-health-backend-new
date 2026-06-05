@@ -1,8 +1,13 @@
+using Triumph.HealthMs.Core.Features.TenantManagement.GetTenantAnnouncements;
+
 namespace Triumph.HealthMs.Queries.QueryTypes;
 
 [Authorize]
 [ExtendObjectType<QueryBase>]
-public class TenantsQueries(ICacheService cacheService)
+public class TenantsQueries(
+    ICacheService cacheService,
+    ILoggedInUserService loggedInUserService,
+    IPermissionService permissionService)
 {
     [Authorize(Roles = ["SuperAdmin"])]
     public async Task<IEnumerable<TenantDto>> AllTenants(
@@ -30,8 +35,6 @@ public class TenantsQueries(ICacheService cacheService)
     public async Task<TenantDto> SingleTenant(
         IResolverContext resolverContext,
         IQueryHandler<GetTenantsQuery, IEnumerable<TenantDto>> handler,
-        ILoggedInUserService loggedInUserService,
-        IPermissionService permissionService,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(loggedInUserService.TenantId))
@@ -87,11 +90,60 @@ public class TenantsQueries(ICacheService cacheService)
         
         return result.Data!;
     }
+
+    public async Task<IEnumerable<FacilityAnnouncementDto>> FacilityAnnouncements(
+        GetFacilityAnnouncementsQuery? query,
+        IQueryHandler<GetFacilityAnnouncementsQuery, IEnumerable<FacilityAnnouncementDto>> handler,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(loggedInUserService.TenantId))
+            throw new GraphQLRequestException("Tenant Id missing");
+        
+        if (string.IsNullOrEmpty(loggedInUserService.FacilityId))
+            throw new GraphQLRequestException("Facility Id missing");
+
+        if (!await permissionService.HasActiveSubscription(cancellationToken))
+            throw new GraphQLRequestException("You do not have an active subscription");
+
+        if (!await permissionService.UserIsAManager(cancellationToken))
+            throw new GraphQLRequestException("You are not authorized to access this resource");
+        
+        var result = await handler.HandleAsync(query ?? new GetFacilityAnnouncementsQuery(), CancellationToken.None);
+        return result.Data!;
+    }
+
+    public async Task<IEnumerable<TenantAnnouncementDto>> TenantAnnouncements(
+        GetTenantAnnouncementsQuery? query,
+        IQueryHandler<GetTenantAnnouncementsQuery, IEnumerable<TenantAnnouncementDto>> handler,
+        CancellationToken cancellationToken)
+    {
+         if(!string.IsNullOrEmpty(loggedInUserService.TenantId))
+             throw new GraphQLRequestException("Tenant Id missing");
+         
+         if(!await permissionService.HasActiveSubscription(cancellationToken))
+             throw new GraphQLRequestException("You do not have an active subscription");
+         
+         if(!await permissionService.UserIsAManager(cancellationToken))
+             throw new GraphQLRequestException("You are not authorized to access this resource");
+         
+         var result = await handler
+             .HandleAsync(query ?? new GetTenantAnnouncementsQuery(), CancellationToken.None);
+         return result.Data!;
+    }
     
     public async Task<IEnumerable<DepartmentDto>> Departments(
         IQueryHandler<object, IEnumerable<DepartmentDto>> handler,
         CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(loggedInUserService.TenantId))
+            throw new GraphQLRequestException("Tenant Id missing");
+        
+        if (string.IsNullOrEmpty(loggedInUserService.FacilityId))
+            throw new GraphQLRequestException("Facility Id missing");
+
+        if (!await permissionService.HasActiveSubscription(cancellationToken))
+            throw new GraphQLRequestException("You do not have an active subscription");
+        
         var result = await handler.HandleAsync(new object(), cancellationToken);
         return result.Data!;
     }

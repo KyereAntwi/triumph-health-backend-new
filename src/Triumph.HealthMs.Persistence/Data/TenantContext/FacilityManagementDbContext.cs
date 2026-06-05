@@ -119,4 +119,5 @@ public sealed class FacilityManagementDbContext : DbContext, IFacilityManagement
     public DbSet<OrganizationalFacility> OrganizationalFacilities => Set<OrganizationalFacility>();
     public DbSet<FacilityManager> FacilityManagers => Set<FacilityManager>();
     public DbSet<FacilityLabTest> FacilityLabTests => Set<FacilityLabTest>();
+    public DbSet<FacilityAnnouncement> FacilityAnnouncements => Set<FacilityAnnouncement>();
 }
