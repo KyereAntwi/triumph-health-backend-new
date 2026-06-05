@@ -13,12 +13,14 @@ public class AppConfigurationQueries(
         IQueryHandler<object, TenantInformationDto> tenantConfigHandler,
         IQueryHandler<object, FacilityInformationDto> facilityConfigHandler,
         IQueryHandler<object, RoleDto> roleConfigHandler,
+        IQueryHandler<object, IEnumerable<AnnouncementDto>> announcementConfigHandler,
         CancellationToken cancellationToken = default)
     {
         var loadUserProfile = context.IsSelected("userInformation");
         var loadTenantProfile = context.IsSelected("tenantInformation");
         var loadFacilityProfile = context.IsSelected("facilityInformation");
         var loadRoleProfile = context.IsSelected("roleInformation");
+        var loadAnnouncementProfile = context.IsSelected("announcements");
 
         var result = new ConfigsResponse();
 
@@ -80,6 +82,20 @@ public class AppConfigurationQueries(
                 throw new GraphQLRequestException(roleConfigs.Message);
 
             result.RoleInformation = roleConfigs.Data;
+        }
+
+        if (loadAnnouncementProfile)
+        {
+            var announcementConfigs = await cacheService.GetOrCreateAsync(
+                CacheKeys.AnnouncementProfile(loggedInUserService.UserId!),
+                async token => await announcementConfigHandler.HandleAsync(new object(), token),
+                absoluteExpiry: TimeSpan.FromDays(1),
+                cancellationToken);
+            
+            if (!announcementConfigs.IsSuccess)
+                throw new GraphQLRequestException(announcementConfigs.Message);
+            
+            result.Announcements = announcementConfigs.Data!;
         }
 
         return result;

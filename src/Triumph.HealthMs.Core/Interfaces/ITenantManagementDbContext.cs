@@ -6,5 +6,6 @@ public interface ITenantManagementDbContext
     DbSet<Subscription> Subscriptions { get; }
     DbSet<TenantSubscription> TenantSubscriptions { get; }
     DbSet<TenantManager> TenantManagers { get; }
+    DbSet<TenantAnnouncement> TenantAnnouncements { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

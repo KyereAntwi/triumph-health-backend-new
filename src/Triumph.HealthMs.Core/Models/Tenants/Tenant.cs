@@ -13,4 +13,5 @@ public class Tenant : AuditableEntity
 
     public ICollection<TenantSubscription> TenantSubscriptions { get; set; } = [];
     public ICollection<TenantManager> TenantManagers { get; set; } = [];
+    public ICollection<TenantAnnouncement> TenantAnnouncements { get; set; } = [];
 }

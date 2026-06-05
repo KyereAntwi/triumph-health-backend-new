@@ -7,6 +7,7 @@ public record ConfigsResponse
     public FacilityInformationDto? FacilityInformation { get; set; } = null;
     public RoleDto? RoleInformation { get; set; } = null;
     public IEnumerable<string> Permissions { get; set; } = [];
+    public IEnumerable<AnnouncementDto> Announcements { get; set; } = [];
 }
 
 public record UserInformationDto(
@@ -31,3 +32,9 @@ public record RoleDto(
     string? Role,
     bool IsTenantManager,
     bool IsFacilityManager);
+    
+public record AnnouncementDto(
+    string Id,
+    string Message,
+    string Type,
+    string Entity);
