@@ -1,7 +1,10 @@
 namespace Triumph.HealthMs.ExternalServices.EventHandlers;
 
 public sealed class EmployeeAddedEventHandler (
-    IServiceScopeFactory serviceScopeFactory, ILogger<EmployeeAddedEventHandler> logger, ISendMessage sendMessage)
+    IServiceScopeFactory serviceScopeFactory, 
+    ILogger<EmployeeAddedEventHandler> logger, 
+    ISendMessage sendMessage,
+    AppSettings appSettings)
     : IConsumer<EmployeeAddedEvent>
 {
     public async Task Consume(ConsumeContext<EmployeeAddedEvent> context)
@@ -13,7 +16,8 @@ public sealed class EmployeeAddedEventHandler (
 
         var invitationLink = userDbContext
             .LinkInvitations
-            .Where(l => l.Id == context.Message.EntityId)
+            .IgnoreQueryFilters()
+            .Where(l => l.Id == context.Message.EntityId && !l.Deleted)
             .Select(l => new
             {
                 l.ApplicationUserId,
@@ -30,7 +34,8 @@ public sealed class EmployeeAddedEventHandler (
         
         var employeeDbContext = scope.ServiceProvider.GetRequiredService<IEmployeeManagementDbContext>();
         var employeeDetails = await employeeDbContext.Employees
-            .Where(e => e.ApplicationUserId == invitationLink.ApplicationUserId)
+            .IgnoreQueryFilters()
+            .Where(e => e.ApplicationUserId == invitationLink.ApplicationUserId && !e.Deleted)
             .Select(e => new
             {
                 e.FacilityId,
@@ -42,7 +47,8 @@ public sealed class EmployeeAddedEventHandler (
         
         var facilityDbContext = scope.ServiceProvider.GetRequiredService<IFacilityManagementDbContext>();
         var facilityDetails = await facilityDbContext.OrganizationalFacilities
-            .Where(f => f.Id == employeeDetails.FacilityId)
+            .IgnoreQueryFilters()
+            .Where(f => f.Id == employeeDetails.FacilityId && !f.Deleted)
             .Select(f => new
             {
                 f.Name,
@@ -56,7 +62,7 @@ public sealed class EmployeeAddedEventHandler (
         var subject = $"Invitation to join {facilityDetails.Name} on Triumph Health";
         var message = UserInvitationTemplate.GetMessage(
             facilityDetails.Name,
-            $"{facilityDetails.UrlSuffix}/triumphhealth.com/invitation?token={employeeDetails.UniqueIdentifier}",
+            $"{facilityDetails.UrlSuffix}/{appSettings.MainDomain}/invitation?token={employeeDetails.UniqueIdentifier}",
             facilityDetails.LogoUrl ?? string.Empty,
             invitationLink.Fullname,
             employeeDetails.Role,

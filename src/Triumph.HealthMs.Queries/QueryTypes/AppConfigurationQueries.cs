@@ -13,7 +13,9 @@ public class AppConfigurationQueries(
         IQueryHandler<object, TenantInformationDto> tenantConfigHandler,
         IQueryHandler<object, FacilityInformationDto> facilityConfigHandler,
         IQueryHandler<object, RoleDto> roleConfigHandler,
+        IQueryHandler<object, IEnumerable<string>> permissionsConfigHandler,
         IQueryHandler<object, IEnumerable<AnnouncementDto>> announcementConfigHandler,
+        IQueryHandler<object, IEnumerable<UiStorageItemDto>> uiStorageItemsConfigHandler,
         CancellationToken cancellationToken = default)
     {
         var loadUserProfile = context.IsSelected("userInformation");
@@ -21,6 +23,8 @@ public class AppConfigurationQueries(
         var loadFacilityProfile = context.IsSelected("facilityInformation");
         var loadRoleProfile = context.IsSelected("roleInformation");
         var loadAnnouncementProfile = context.IsSelected("announcements");
+        var loadUiStorageItemsProfile = context.IsSelected("uiStorageItems");
+        var loadPermissionsProfile = context.IsSelected("permissions");
 
         var result = new ConfigsResponse();
 
@@ -52,6 +56,21 @@ public class AppConfigurationQueries(
                 throw new GraphQLRequestException(tenantConfigs.Message);
 
             result.TenantInformation = tenantConfigs.Data;
+        }
+        
+        if(loadPermissionsProfile)
+        {
+            var permissionsConfigs = 
+                    await cacheService.GetOrCreateAsync(
+                        CacheKeys.PermissionsProfile(loggedInUserService.UserId!),
+                        async token => await permissionsConfigHandler.HandleAsync(new object(), token),
+                        absoluteExpiry: TimeSpan.FromDays(1),
+                        cancellationToken);
+            
+            if (!permissionsConfigs.IsSuccess)
+                throw new GraphQLRequestException(permissionsConfigs.Message);
+
+            result.Permissions = permissionsConfigs.Data!;
         }
 
         if (loadFacilityProfile)
@@ -96,6 +115,20 @@ public class AppConfigurationQueries(
                 throw new GraphQLRequestException(announcementConfigs.Message);
             
             result.Announcements = announcementConfigs.Data!;
+        }
+        
+        if(loadUiStorageItemsProfile)
+        {
+            var uiStorageItemsConfigs = await cacheService.GetOrCreateAsync(
+                CacheKeys.UiStorageItemsProfile(loggedInUserService.UserId!),
+                async token => await uiStorageItemsConfigHandler.HandleAsync(new object(), token),
+                absoluteExpiry: TimeSpan.FromDays(1),
+                cancellationToken);
+
+            if (!uiStorageItemsConfigs.IsSuccess)
+                throw new GraphQLRequestException(uiStorageItemsConfigs.Message);
+
+            result.UiStorageItems = uiStorageItemsConfigs.Data!;
         }
 
         return result;

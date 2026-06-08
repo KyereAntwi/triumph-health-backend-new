@@ -8,6 +8,7 @@ public record ConfigsResponse
     public RoleDto? RoleInformation { get; set; } = null;
     public IEnumerable<string> Permissions { get; set; } = [];
     public IEnumerable<AnnouncementDto> Announcements { get; set; } = [];
+    public IEnumerable<UiStorageItemDto> UiStorageItems { get; set; } = [];
 }
 
 public record UserInformationDto(
@@ -38,3 +39,5 @@ public record AnnouncementDto(
     string Message,
     string Type,
     string Entity);
+    
+public record UiStorageItemDto(string Key, string Value);
