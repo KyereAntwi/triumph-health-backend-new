@@ -40,6 +40,7 @@ public sealed class ApplicationUserManagementDbContext : DbContext, IApplication
 
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<LinkInvitation> LinkInvitations => Set<LinkInvitation>();
+    public DbSet<UiStorageItem> UiStorageItems => Set<UiStorageItem>();
 
     private void ApplyDeletedFilter(ModelBuilder modelBuilder)
     {

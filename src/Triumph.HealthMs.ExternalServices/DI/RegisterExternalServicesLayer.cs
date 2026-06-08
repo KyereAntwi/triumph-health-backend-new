@@ -24,19 +24,13 @@ public static class RegisterExternalServicesLayer
 
                 options.Events = new JwtBearerEvents
                 {
-                    OnMessageReceived = context =>
-
-                    {
-
-                        var token = context.Token ??
-
-                                    context.Request.Headers.Authorization.ToString();
-
-                        Console.WriteLine($"TOKEN: {token}");
-
-                        return Task.CompletedTask;
-
-                    },
+                    // uncomment for debugging purposes
+                    // OnMessageReceived = context =>
+                    // {
+                    //     var token = context.Token ?? context.Request.Headers.Authorization.ToString();
+                    //     Console.WriteLine($"TOKEN: {token}");
+                    //     return Task.CompletedTask;
+                    // },
                     
                     OnAuthenticationFailed = context =>
                     {
@@ -105,25 +99,54 @@ public static class RegisterExternalServicesLayer
         {
             client.BaseAddress = new Uri(configuration["Resend:BaseUrl"]!);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {configuration["Resend:ApiKey"]}");
-            client.DefaultRequestHeaders.Add("Content-Type", "application/json");
             client.DefaultRequestHeaders.Add("User-Agent", "Triumph Health Management System");
+        })
+        .AddStandardResilienceHandler(options =>
+        {
+            options.Retry.MaxRetryAttempts = 3;
+            options.Retry.Delay = TimeSpan.FromSeconds(1);
+            options.Retry.BackoffType = DelayBackoffType.Exponential;
+            options.Retry.UseJitter = true;
+
+            options.Retry.ShouldHandle = new PredicateBuilder<HttpResponseMessage>()
+                .Handle<HttpRequestException>()
+                .HandleResult(r => r.StatusCode is >= HttpStatusCode.InternalServerError or HttpStatusCode.RequestTimeout);
+
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(8);
         });
 
-        services.AddHttpClient("arkessel", client =>
-        {
-            client.BaseAddress = new Uri(configuration["Arkessel:BaseUrl"]!);
-            client.DefaultRequestHeaders.Add("api-key", configuration["Arkessel:ApiKey"]);
-            client.DefaultRequestHeaders.Add("Content-Type", "application/json");
-        });
+        services.AddHttpClient("arkessel", client => 
+            {
+                client.BaseAddress = new Uri(configuration["Arkessel:BaseUrl"]!);
+                client.DefaultRequestHeaders.Add("api-key", configuration["Arkessel:ApiKey"]);
+            })
+            .AddStandardResilienceHandler(options =>
+            {
+                options.Retry.MaxRetryAttempts = 3;
+                options.Retry.Delay = TimeSpan.FromSeconds(1);
+                options.Retry.BackoffType = DelayBackoffType.Exponential;
+                options.Retry.UseJitter = true;
+                
+                options.Retry.ShouldHandle = new PredicateBuilder<HttpResponseMessage>()
+                    .Handle<HttpRequestException>()
+                    .HandleResult(r => r.StatusCode is >= HttpStatusCode.InternalServerError or HttpStatusCode.RequestTimeout);
+                
+                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
+                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
+            });
 
         
         services.AddTransient<ISendMessage, MessagingServices>();
         
-        services.AddSingleton<ResendSettings>();
         services.Configure<ResendSettings>(configuration.GetSection("Resend"));
+        services.AddTransient(sp => sp.GetRequiredService<IOptions<ResendSettings>>().Value);
         
-        services.AddSingleton<ArkesselSettings>();
         services.Configure<ArkesselSettings>(configuration.GetSection("Arkessel"));
+        services.AddTransient(sp => sp.GetRequiredService<IOptions<ArkesselSettings>>().Value);
+
+        services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
+        services.AddTransient(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
         
         return services;
     }

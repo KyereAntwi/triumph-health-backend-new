@@ -1,6 +1,9 @@
 // Global using directives
 
+global using System.Net;
 global using System.Net.Http.Json;
+global using MailKit.Net.Smtp;
+global using MailKit.Security;
 global using MassTransit;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.EntityFrameworkCore;
@@ -10,8 +13,12 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
 global using Microsoft.IdentityModel.Tokens;
+global using MimeKit;
+global using Polly;
 global using Triumph.HealthMs.Core.Enums;
+global using Triumph.HealthMs.Core.Features.ApplicationUser.AddLinkInvitation;
 global using Triumph.HealthMs.Core.Features.EmployeeManagement.AddAnEmployee;
 global using Triumph.HealthMs.Core.Features.PatientManagement.AddPatient;
 global using Triumph.HealthMs.Core.Features.TenantManagement.AddTenantAccount;

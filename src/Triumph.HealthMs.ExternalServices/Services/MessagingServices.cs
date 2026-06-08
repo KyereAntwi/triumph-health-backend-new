@@ -12,9 +12,9 @@ public sealed class MessagingServices(
         var resendClient = httpClientFactory.CreateClient("resend");
         var body = new
         {
-            from = from ?? resendSettings.FromEmail,
+            from = resendSettings.FromEmail,
             to = tos,
-            subject = subject,
+            subject,
             html = htmlContent
         };
 
@@ -42,7 +42,7 @@ public sealed class MessagingServices(
         var body = new
         {
             sender = from ?? arkesselSettings.Sender,
-            message = message,
+            message,
             recipients = tos
         };
 
