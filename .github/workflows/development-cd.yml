@@ -84,16 +84,16 @@ jobs:
               -e "AuthServer__AuthorizationUrl=${{ secrets.QA_AUTH_SERVER_AUTHORIZATION_URL }}" \
               -e "AuthServer__TokenUrl=${{ secrets.QA_AUTH_SERVER_TOKEN_URL }}" \
               -e "Sentry__Dsn=${{ secrets.QA_SENTRY_DSN }}" \
-              -e "AppSettings__MainDomain=${{ secrets.QA_AppSettings_MainDomain }}"\
-              -e "AppSettings__VercelCname=${{ secrets.QA_AppSettings_VercelCname }}"\
-              -e "DigitalOcean__ApiToken=${{ secrets.QA_DigitalOcean_ApiToken }}"
-              -e "DigitalOcean__BaseUrl=${{ secrets.QA_DigitalOcean_BaseUrl }}"
-              -e "Arkessel__ApiKey=${{ secrets.QA_Arkessel_ApiKey }}"
-              -e "Arkessel__BaseUrl=${{ secrets.QA_Arkessel_BaseUrl }}"
-              -e "Arkessel__Sender=${{ secrets.QA_Arkessel_Sender }}"
-              -e "Resend__ApiKey=${{ secrets.QA_Resend_ApiKey }}"
-              -e "Resend__BaseUrl=${{ secrets.QA_Resend_BaseUrl }}"
-              -e "Resend__FromEmail=${{ secrets.QA_Resend_FromEmail }}"
+              -e "AppSettings__MainDomain=${{ secrets.QA_AppSettings_MainDomain }}" \
+              -e "AppSettings__VercelCname=${{ secrets.QA_AppSettings_VercelCname }}" \
+              -e "DigitalOcean__ApiToken=${{ secrets.QA_DigitalOcean_ApiToken }}" \
+              -e "DigitalOcean__BaseUrl=${{ secrets.QA_DigitalOcean_BaseUrl }}" \
+              -e "Arkessel__ApiKey=${{ secrets.QA_Arkessel_ApiKey }}" \
+              -e "Arkessel__BaseUrl=${{ secrets.QA_Arkessel_BaseUrl }}" \
+              -e "Arkessel__Sender=${{ secrets.QA_Arkessel_Sender }}" \
+              -e "Resend__ApiKey=${{ secrets.QA_Resend_ApiKey }}" \
+              -e "Resend__BaseUrl=${{ secrets.QA_Resend_BaseUrl }}" \
+              -e "Resend__FromEmail=${{ secrets.QA_Resend_FromEmail }}" \
               ${{ env.DOCKER_IMAGE }}:latest
             
             echo "Deployment completed successfully"
