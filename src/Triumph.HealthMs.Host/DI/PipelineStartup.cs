@@ -24,14 +24,14 @@ public static class PipelineStartup
         app.UseAuthentication();
         app.UseMiddleware<UserResourceResolverMiddleware>();
         app.UseAuthorization();
+        
+        app.MapGraphQL();
 
         var versionSet = app.NewApiVersionSet()
             .HasApiVersion(new ApiVersion(1, 0))
             .ReportApiVersions()
             .Build();
-            
-        app.MapGraphQL();
-            
+        
         var versionedGroup = app.MapGroup("/api/v{version:apiVersion}")
             .WithApiVersionSet(versionSet);
         versionedGroup.MapCarter();

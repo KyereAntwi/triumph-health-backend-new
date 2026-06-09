@@ -47,18 +47,22 @@ public static class RegisterExternalServicesLayer
             config.AddConsumers(typeof(PatientAddedEventHandler).Assembly);
             
             var rabbitMqHost = configuration["RabbitMQ:HostName"];
-            if (string.IsNullOrEmpty(rabbitMqHost))
+
+            if (string.IsNullOrEmpty(rabbitMqHost) || environment.IsDevelopment())
             {
                 config.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
             }
             else
             {
+                var rabbitMqPort = ushort.TryParse(configuration["RabbitMQ:Port"], out var port) ? port : (ushort)5672;
+                var vhost = configuration["RabbitMQ:VHost"];
+
                 config.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(rabbitMqHost, h =>
+                    cfg.Host(rabbitMqHost, rabbitMqPort, vhost, h =>
                     {
-                        h.Username(configuration["RabbitMQ:Username"] ??  "guest");
-                        h.Password(configuration["RabbitMQ:Password"] ??   "guest");
+                        h.Username(configuration["RabbitMQ:Username"] ?? "guest");
+                        h.Password(configuration["RabbitMQ:Password"] ?? "guest");
                     });
                     cfg.ConfigureEndpoints(context);
                 });
