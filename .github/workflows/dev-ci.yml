@@ -55,10 +55,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
             
-      - name: Extract short SHA for tagging
-        id: vars
-        run: echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-        
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
@@ -67,5 +63,5 @@ jobs:
           push: true
           tags: |
             ${{ env.DOCKER_IMAGE }}:latest
-            ${{ env.DOCKER_IMAGE }}:${{ env.SHORT_SHA }}
+            ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
           platforms: linux/amd64

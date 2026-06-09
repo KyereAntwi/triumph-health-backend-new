@@ -2,11 +2,20 @@ name: Development CD Pipeline
 
 on:
   workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag to deploy (paste the full commit SHA from the CI run)'
+        required: false
+        default: 'latest'
+
+concurrency:
+  group: deploy-qa
+  cancel-in-progress: false
 
 env:
   DOTNET_VERSION: "10.0.x"
   DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/triumph-healthms
-  
+
 jobs:
   deploy-qa:
     name: Deploy to QA (Manual Trigger)
@@ -15,17 +24,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Check Docker Image
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Verify image tag exists in registry
         run: |
-          echo "Checking if Docker image ${{ env.DOCKER_IMAGE }}:latest exists..."
-          if ! docker pull ${{ env.DOCKER_IMAGE }}:latest --quiet; then
-            echo "❌ Docker image not found. Please ensure CI pipeline has completed successfully."
+          IMAGE_REF="${{ env.DOCKER_IMAGE }}:${{ inputs.image_tag }}"
+          echo "Checking if $IMAGE_REF exists in registry..."
+          if ! docker manifest inspect "$IMAGE_REF" > /dev/null 2>&1; then
+            echo "❌ Image $IMAGE_REF not found. Ensure CI completed for this commit SHA."
             exit 1
-          else
-            echo "✅ Docker image found and pulled successfully"
           fi
-        
+          echo "✅ Image $IMAGE_REF confirmed in registry"
+
       - name: Deploy to CloudClusters QA
         uses: appleboy/ssh-action@v1
         with:
@@ -34,21 +49,28 @@ jobs:
           password: ${{ secrets.QA_SERVER_PASSWORD }}
           port: ${{ secrets.QA_SERVER_PORT }}
           script: |
+            IMAGE_REF="${{ secrets.DOCKER_USERNAME }}/triumph-healthms:${{ inputs.image_tag }}"
+
+            # Pull the exact image on the server before making any other changes
+            echo "Pulling $IMAGE_REF on server..."
+            docker pull "$IMAGE_REF"
+            EXPECTED_IMAGE_ID=$(docker inspect --format='{{.Id}}' "$IMAGE_REF")
+            echo "Expected image ID: $EXPECTED_IMAGE_ID"
+
             # Check what's using port 8080 and clean it up
             echo "Checking for processes using port 8080..."
             PORT_8080_PID=$(lsof -ti:8080 2>/dev/null || echo "")
             if [ -n "$PORT_8080_PID" ]; then
               echo "Found process(es) using port 8080: $PORT_8080_PID"
-              echo "Killing process(es)..."
               kill -9 $PORT_8080_PID 2>/dev/null || true
               sleep 2
             fi
-            
+
             # Stop and remove existing container if it exists
             echo "Stopping existing triumph-healthms-qa container..."
             docker stop triumph-healthms-qa || true
             docker rm triumph-healthms-qa || true
-            
+
             # Also check for any other containers that might be using port 8080
             echo "Checking for other containers using port 8080..."
             CONFLICTING_CONTAINERS=$(docker ps -a --filter "publish=8080" --format "{{.Names}}" 2>/dev/null || echo "")
@@ -60,20 +82,22 @@ jobs:
                 docker rm $container || true
               done
             fi
-            
-            # Wait a moment for cleanup
+
             sleep 3
-            
-            # Run the new container with env vars
-            echo "Starting new container..."
+
+            # Run the new container from the exact pulled image ref
+            echo "Starting new container from $IMAGE_REF..."
             docker run -d \
               --name triumph-healthms-qa \
               --restart unless-stopped \
+              --pull always \
               -p 8080:8080 \
               -e ASPNETCORE_ENVIRONMENT=Staging \
               -e "ConnectionStrings__DefaultConnection=${{ secrets.QA_DB_CONNECTION_STRING }}" \
               -e "ConnectionStrings__Redis=${{ secrets.QA_REDIS_CONNECTION_STRING }}" \
               -e "RabbitMQ__HostName=${{ secrets.QA_RABBITMQ_HOST }}" \
+              -e "RabbitMQ__Port=5671" \
+              -e "RabbitMQ__VHost=${{ secrets.QA_RABBITMQ_VHost }}" \
               -e "RabbitMQ__UserName=${{ secrets.QA_RABBITMQ_USERNAME }}" \
               -e "RabbitMQ__Password=${{ secrets.QA_RABBITMQ_PASSWORD }}" \
               -e "AuthServer__Authority=${{ secrets.QA_AUTH_SERVER_URL }}" \
@@ -94,20 +118,21 @@ jobs:
               -e "Resend__ApiKey=${{ secrets.QA_Resend_ApiKey }}" \
               -e "Resend__BaseUrl=${{ secrets.QA_Resend_BaseUrl }}" \
               -e "Resend__FromEmail=${{ secrets.QA_Resend_FromEmail }}" \
-              ${{ env.DOCKER_IMAGE }}:latest
-            
-            echo "Deployment completed successfully"
-            
-            # Verify the container is running
+              "$IMAGE_REF"
+
+            # Verify container is running and image digest matches
             echo "Verifying deployment..."
             sleep 5
             if docker ps | grep -q triumph-healthms-qa; then
-              echo "✅ Container triumph-healthms-qa is running successfully"
-              CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' triumph-healthms-qa 2>/dev/null || echo "unknown")
-              echo "Container IP: $CONTAINER_IP"
+              RUNNING_IMAGE_ID=$(docker inspect --format='{{.Image}}' triumph-healthms-qa 2>/dev/null || echo "")
+              if [ "$RUNNING_IMAGE_ID" = "$EXPECTED_IMAGE_ID" ]; then
+                echo "✅ Container triumph-healthms-qa is running with verified image $IMAGE_REF"
+              else
+                echo "❌ Image digest mismatch! Expected: $EXPECTED_IMAGE_ID, Got: $RUNNING_IMAGE_ID"
+                exit 1
+              fi
             else
               echo "❌ Container triumph-healthms-qa failed to start"
-              echo "Checking container logs:"
               docker logs triumph-healthms-qa 2>/dev/null || echo "No logs available"
               exit 1
             fi
