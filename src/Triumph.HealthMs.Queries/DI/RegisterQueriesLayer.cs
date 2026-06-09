@@ -6,12 +6,8 @@ public static class RegisterQueriesLayer
     {
         services.AddGraphQLServer()
             .AddAuthorization()
-            .AddQueryType<QueryBase>()
-            .AddTypeExtension<HealthCheckQuery>()
-            .AddTypeExtension<TenantsQueries>()
-            .AddTypeExtension<EmployeesQueries>()
-            .AddTypeExtension<AppConfigurationQueries>();
-        
+            .AddQueryType(d => d.Field("hello").Resolve("World"));
+
         return services;
     }
 }
