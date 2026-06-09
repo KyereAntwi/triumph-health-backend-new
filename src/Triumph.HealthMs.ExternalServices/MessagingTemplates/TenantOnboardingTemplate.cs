@@ -20,7 +20,7 @@ public static class TenantOnboardingTemplate
                 <li><strong>Charge Rate:</strong> {rate.ToString()}</li>
             </ul>
             
-            <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team at <a href='mailto:support@triumphhealth.com'>support@triumphhealth.com</a>.</p>
+            <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team at <a href='mailto:support@triumphhealth.com'>support@triumphhealth.online</a>.</p>
             
             <p>Best regards,<br>Triumph Health Team</p>
         </div>

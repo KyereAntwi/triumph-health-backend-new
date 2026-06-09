@@ -14,7 +14,7 @@ public sealed class InvitationAddedEventHandler(
         var scope = serviceScopeFactory.CreateScope();
         var userDbContext = scope.ServiceProvider.GetRequiredService<IApplicationUserManagementDbContext>();
         
-        var invitationLink = userDbContext
+        var invitationLink = await userDbContext
             .LinkInvitations
             .IgnoreQueryFilters()
             .Where(l => l.Id == context.Message.EntityId && !l.Deleted)
@@ -24,7 +24,7 @@ public sealed class InvitationAddedEventHandler(
                 Fullname = l.ApplicationUser!.FirstName + " " + l.ApplicationUser.LastName,
                 l.ApplicationUser.Email,
             })
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
         
         if (invitationLink is null)
         {
@@ -76,7 +76,7 @@ public sealed class InvitationAddedEventHandler(
         var subject = $"Invitation to join {facilityDetails.Name} on Triumph Health";
         var message = UserInvitationTemplate.GetMessage(
             facilityDetails.Name,
-            $"{facilityDetails.UrlSuffix}/{appSettings.MainDomain}/invitation?token={context.Message.EntityId}",
+            $"{facilityDetails.UrlSuffix}.facilities-app.{appSettings.MainDomain}/invitation?token={context.Message.EntityId}",
             facilityDetails.LogoUrl ?? string.Empty,
             invitationLink.Fullname,
             role,

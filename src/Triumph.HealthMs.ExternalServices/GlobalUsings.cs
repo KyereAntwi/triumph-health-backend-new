@@ -2,6 +2,7 @@
 
 global using System.Net;
 global using System.Net.Http.Json;
+global using System.Text.Json;
 global using MailKit.Net.Smtp;
 global using MailKit.Security;
 global using MassTransit;
@@ -20,6 +21,7 @@ global using Polly;
 global using Triumph.HealthMs.Core.Enums;
 global using Triumph.HealthMs.Core.Features.ApplicationUser.AddLinkInvitation;
 global using Triumph.HealthMs.Core.Features.EmployeeManagement.AddAnEmployee;
+global using Triumph.HealthMs.Core.Features.FacilityManagement.AddFacility;
 global using Triumph.HealthMs.Core.Features.PatientManagement.AddPatient;
 global using Triumph.HealthMs.Core.Features.TenantManagement.AddTenantAccount;
 global using Triumph.HealthMs.Core.Interfaces;

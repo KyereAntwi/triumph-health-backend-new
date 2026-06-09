@@ -15,25 +15,17 @@ public sealed class MessagingServices(
             from = resendSettings.FromEmail,
             to = tos,
             subject,
-            html = htmlContent
+            html = htmlContent,
+            attachments
         };
 
-        if (attachments != null)
-        {
-            // todo - process attachments
-        }
+        var response = await resendClient.PostAsJsonAsync("/emails", body);
 
-        try
-        {
-            var response = await resendClient.PostAsJsonAsync("/emails", body);
-            response.EnsureSuccessStatusCode();
-            return (true, null);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "There was a problem sending the email. Email body: {Body} ", body);
-            return (false, e.Message);
-        }
+        if (response.IsSuccessStatusCode) return (true, null);
+        
+        var error = await response.Content.ReadAsStringAsync();
+        logger.LogError("There was a problem sending the email. Error: {Error} Email body: {Body} ", error, body);
+        return (false, error);
     }
 
     public async Task<(bool, string?)> SendSmsAsync(List<string> tos, string? from, string message)
@@ -45,17 +37,13 @@ public sealed class MessagingServices(
             message,
             recipients = tos
         };
+        
+        var response = await arkesselClient.PostAsJsonAsync("/sms/send", body);
 
-        try
-        {
-            var response = await arkesselClient.PostAsJsonAsync("/sms/send", body);
-            response.EnsureSuccessStatusCode();
-            return (true, null);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "There was a problem sending the SMS. SMS body: {Body} ", body);
-            return (false, e.Message);
-        }
+        if (response.IsSuccessStatusCode) return (true, null);
+        
+        var error = await response.Content.ReadAsStringAsync();
+        logger.LogError("There was a problem sending the SMS. Error: {Error} SMS body: {Body} ", error, body);
+        return (false, error);
     }
 }
