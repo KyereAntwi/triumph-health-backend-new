@@ -96,7 +96,7 @@ public static class ServicesStartup
         
         // register layers
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddExternalServicesLayer(builder.Configuration, builder.Environment);
+        builder.Services.AddExternalServicesLayer(builder.Configuration, environment);
         builder.Services.AddPersistenceLayer(builder.Configuration);
         builder.Services.AddQueryCommandHandlers();
         builder.Services.AddCommandServices();
@@ -117,8 +117,7 @@ public static class ServicesStartup
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("SecurePolicy", policy => 
-                policy.WithOrigins(
-                    "https://localhost:7153")
+                policy.WithOrigins(environment.IsDevelopment() ? "https://localhost:7153" : "triumphhealth.online")
                     .WithMethods("GET", "POST", "PUT", "DELETE", "PUT")
                     .WithHeaders("Content-Type", "Authorization", "x-ms-tenant-id", "x-ms-facility-id"));
         });

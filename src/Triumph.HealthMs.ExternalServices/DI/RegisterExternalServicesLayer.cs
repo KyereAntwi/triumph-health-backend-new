@@ -47,7 +47,7 @@ public static class RegisterExternalServicesLayer
             config.AddConsumers(typeof(PatientAddedEventHandler).Assembly);
             
             var rabbitMqHost = configuration["RabbitMQ:HostName"];
-            if (string.IsNullOrEmpty(rabbitMqHost) || environment.IsDevelopment())
+            if (string.IsNullOrEmpty(rabbitMqHost))
             {
                 config.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
             }
