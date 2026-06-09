@@ -136,8 +136,29 @@ public static class RegisterExternalServicesLayer
                 options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
             });
 
+        services.AddHttpClient("digitalocean", client =>
+        {
+            client.BaseAddress = new Uri(configuration["DigitalOcean:BaseUrl"]!);
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {configuration["DigitalOcean:ApiToken"]}");
+        })
+        .AddStandardResilienceHandler(options =>
+        {
+            options.Retry.MaxRetryAttempts = 3;
+            options.Retry.Delay = TimeSpan.FromSeconds(1);
+            options.Retry.BackoffType = DelayBackoffType.Exponential;
+            options.Retry.UseJitter = true;
+                
+            options.Retry.ShouldHandle = new PredicateBuilder<HttpResponseMessage>()
+                .Handle<HttpRequestException>()
+                .HandleResult(r => r.StatusCode is >= HttpStatusCode.InternalServerError or HttpStatusCode.RequestTimeout);
+                
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
+        });
+
         
         services.AddTransient<ISendMessage, MessagingServices>();
+        services.AddTransient<IDnsServices, DnsServices>();
         
         services.Configure<ResendSettings>(configuration.GetSection("Resend"));
         services.AddTransient(sp => sp.GetRequiredService<IOptions<ResendSettings>>().Value);

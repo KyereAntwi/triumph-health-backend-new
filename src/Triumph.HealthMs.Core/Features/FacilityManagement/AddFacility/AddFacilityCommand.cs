@@ -18,7 +18,9 @@ public sealed class AddFacilityCommandValidator : AbstractValidator<AddFacilityC
         RuleFor(x => x.UrlSuffix)
             .NotEmpty().WithMessage("UrlSuffix is required")
             .MaximumLength(30).WithMessage("UrlSuffix should not be more than 30 characters")
-            .Matches(@"^[a-zA-Z0-9.\-]+$").WithMessage("UrlSuffix contains invalid characters");
+            .Matches(@"^[a-zA-Z0-9.\-]+$").WithMessage("UrlSuffix contains invalid characters")
+            .Must(x => !x.Contains("www") || !x.Contains("app") || !x.Contains("api") || !x.Contains("auth") || !x.Contains("mail") || !x.Contains("admin") || !x.Contains("docs"))
+            .WithMessage("UrlSuffix contains invalid characters");
         
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name title is required")

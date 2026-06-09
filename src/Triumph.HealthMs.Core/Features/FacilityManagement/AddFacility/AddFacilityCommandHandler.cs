@@ -59,7 +59,7 @@ public sealed class AddFacilityCommandHandler(
         {
             Id = Guid.CreateVersion7(),
             TenantId = Guid.Parse(loggedInUserService.TenantId!),
-            UrlSuffix = command.UrlSuffix,
+            UrlSuffix = command.UrlSuffix.ToLower(),
             Name = command.Name,
             Address = command.Address,
             Email = command.Email,
@@ -69,8 +69,8 @@ public sealed class AddFacilityCommandHandler(
         };
         await context.OrganizationalFacilities.AddAsync(newFacility, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
-        
-        // TODO - Add first manager and employee with transaction
+
+        await PublishFacilityAddedEvent(newFacility.Id);
 
         return new BaseResponse<Guid>
         {

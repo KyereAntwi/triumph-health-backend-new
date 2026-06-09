@@ -42,15 +42,10 @@ public sealed class TenantAccountAddedEventHandler(
             tenant.Subscription.ExpiresAt,
             tenant.Subscription.SubscriptionChargeRate);
 
-        var (success, error) = await sendMessage.SendEmailAsync(
+        await sendMessage.SendEmailAsync(
             [tenant.Email],
-            "",
+            null,
             "Welcome to Triumph Health",
             emailBody);
-        
-        if(!success)
-        {
-            logger.LogError("Error occured sending email to tenant. Error = {Error}. Event body {Event}", error, context.Message);
-        }
     }
 }
