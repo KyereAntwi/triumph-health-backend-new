@@ -19,25 +19,22 @@ public static class PipelineStartup
         app.UseExceptionHandler();
         app.UseCors("SecurePolicy");
         
-        app.UseRouting(); // Explicitly add UseRouting()
+        app.UseRouting();
 
         app.UseAuthentication();
         app.UseMiddleware<UserResourceResolverMiddleware>();
         app.UseAuthorization();
 
-        app.UseEndpoints(endpoints => // Use UseEndpoints to define routes
-        {
-            var versionSet = endpoints.NewApiVersionSet()
-                .HasApiVersion(new ApiVersion(1, 0))
-                .ReportApiVersions()
-                .Build();
+        var versionSet = app.NewApiVersionSet()
+            .HasApiVersion(new ApiVersion(1, 0))
+            .ReportApiVersions()
+            .Build();
             
-            endpoints.MapGraphQL(); // Move MapGraphQL inside UseEndpoints
+        app.MapGraphQL();
             
-            var versionedGroup = endpoints.MapGroup("/api/v{version:apiVersion}")
-                .WithApiVersionSet(versionSet);
-            versionedGroup.MapCarter();
-        });
+        var versionedGroup = app.MapGroup("/api/v{version:apiVersion}")
+            .WithApiVersionSet(versionSet);
+        versionedGroup.MapCarter();
         
         return app;
     }
