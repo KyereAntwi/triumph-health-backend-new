@@ -57,12 +57,12 @@ jobs:
             EXPECTED_IMAGE_ID=$(docker inspect --format='{{.Id}}' "$IMAGE_REF")
             echo "Expected image ID: $EXPECTED_IMAGE_ID"
 
-            # Check what's using port 8080 and clean it up
-            echo "Checking for processes using port 8080..."
-            PORT_8080_PID=$(lsof -ti:8080 2>/dev/null || echo "")
-            if [ -n "$PORT_8080_PID" ]; then
-              echo "Found process(es) using port 8080: $PORT_8080_PID"
-              kill -9 $PORT_8080_PID 2>/dev/null || true
+            # Check what's using port 80 and clean it up
+            echo "Checking for processes using port 80..."
+            PORT_80_PID=$(lsof -ti:80 2>/dev/null || echo "")
+            if [ -n "$PORT_80_PID" ]; then
+              echo "Found process(es) using port 80: $PORT_80_PID"
+              kill -9 $PORT_80_PID 2>/dev/null || true
               sleep 2
             fi
 
@@ -71,11 +71,11 @@ jobs:
             docker stop triumph-healthms-qa || true
             docker rm triumph-healthms-qa || true
 
-            # Also check for any other containers that might be using port 8080
-            echo "Checking for other containers using port 8080..."
-            CONFLICTING_CONTAINERS=$(docker ps -a --filter "publish=8080" --format "{{.Names}}" 2>/dev/null || echo "")
+            # Also check for any other containers that might be using port 80
+            echo "Checking for other containers using port 80..."
+            CONFLICTING_CONTAINERS=$(docker ps -a --filter "publish=80" --format "{{.Names}}" 2>/dev/null || echo "")
             if [ -n "$CONFLICTING_CONTAINERS" ]; then
-              echo "Found containers using port 8080: $CONFLICTING_CONTAINERS"
+              echo "Found containers using port 80: $CONFLICTING_CONTAINERS"
               for container in $CONFLICTING_CONTAINERS; do
                 echo "Stopping and removing container: $container"
                 docker stop $container || true
@@ -91,7 +91,7 @@ jobs:
               --name triumph-healthms-qa \
               --restart unless-stopped \
               --pull always \
-              -p 8080:8080 \
+              -p 80:80 \
               -e ASPNETCORE_ENVIRONMENT=Staging \
               -e "ConnectionStrings__DefaultConnection=${{ secrets.QA_DB_CONNECTION_STRING }}" \
               -e "ConnectionStrings__Redis=${{ secrets.QA_REDIS_CONNECTION_STRING }}" \
