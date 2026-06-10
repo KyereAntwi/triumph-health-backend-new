@@ -1,14 +1,14 @@
 namespace Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 
 public sealed class GetFacilityConfigsQueryHandler(
-    IFacilityManagementDbContext dbContext,
-    ILoggedInUserService loggedInUserService) 
+    IFacilityManagementDbContext dbContext)
     : IQueryHandler<object, FacilityInformationDto>
 {
     public async Task<BaseResponse<FacilityInformationDto>> HandleAsync(object query, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(loggedInUserService.FacilityId) &&
-            string.IsNullOrEmpty(loggedInUserService.FacilityUrlPrefix))
+        var ctx = (AppConfigUserContext)query;
+        if (string.IsNullOrEmpty(ctx.FacilityId) &&
+            string.IsNullOrEmpty(ctx.FacilityUrlPrefix))
             return new BaseResponse<FacilityInformationDto>
             {
                 IsSuccess = false,
@@ -17,10 +17,10 @@ public sealed class GetFacilityConfigsQueryHandler(
 
         var innerQuery = dbContext.OrganizationalFacilities.AsQueryable();
 
-        if (!string.IsNullOrEmpty(loggedInUserService.FacilityId))
+        if (!string.IsNullOrEmpty(ctx.FacilityId))
         {
             var facility = await innerQuery
-                .Where(f => f.Id == Guid.Parse(loggedInUserService.FacilityId))
+                .Where(f => f.Id == Guid.Parse(ctx.FacilityId))
                 .Select(f => new FacilityInformationDto(
                     f.Id.ToString(),
                     f.Name,
@@ -36,7 +36,7 @@ public sealed class GetFacilityConfigsQueryHandler(
         }
 
         var result = await innerQuery
-            .Where(f => f.UrlSuffix == loggedInUserService.FacilityUrlPrefix)
+            .Where(f => f.UrlSuffix == ctx.FacilityUrlPrefix)
             .Select(f => new FacilityInformationDto(
                 f.Id.ToString(),
                 f.Name,

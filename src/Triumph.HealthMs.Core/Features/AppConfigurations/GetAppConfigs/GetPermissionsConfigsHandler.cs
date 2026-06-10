@@ -1,16 +1,16 @@
 namespace Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 
-public sealed class GetPermissionsConfigsHandler (
+public sealed class GetPermissionsConfigsHandler(
     IEmployeeManagementDbContext dbContext,
-    ILoggedInUserService loggedInUserService,
     IApplicationUserManagementDbContext appUserContext)
     : IQueryHandler<object, IEnumerable<string>>
 {
     public async Task<BaseResponse<IEnumerable<string>>> HandleAsync(object query, CancellationToken cancellationToken = default)
     {
+        var ctx = (AppConfigUserContext)query;
         var appUserId = await appUserContext
             .ApplicationUsers
-            .Where(x => x.UserId == loggedInUserService.UserId)
+            .Where(x => x.UserId == ctx.UserId)
             .Select(x => x.Id)
             .FirstOrDefaultAsync(cancellationToken);
         

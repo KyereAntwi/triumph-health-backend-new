@@ -1,18 +1,18 @@
 namespace Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 
 public sealed class GetUserRoleConfigsQueryHandler(
-    ILoggedInUserService loggedInUserService,
     IApplicationUserManagementDbContext userDbContext,
     IEmployeeManagementDbContext employeeDbContext,
     IPatientManagementDbContext patientDbContext,
     ITenantManagementDbContext tenantDbContext,
-    IFacilityManagementDbContext facilityDbContext) 
+    IFacilityManagementDbContext facilityDbContext)
     : IQueryHandler<object, RoleDto>
 {
     public async Task<BaseResponse<RoleDto>> HandleAsync(object query, CancellationToken cancellationToken = default)
     {
+        var ctx = (AppConfigUserContext)query;
         var appUserId = await userDbContext.ApplicationUsers
-            .Where(u => loggedInUserService.UserId == u.UserId)
+            .Where(u => ctx.UserId == u.UserId)
             .Select(u => u.Id)
             .FirstAsync(cancellationToken);
 
@@ -35,7 +35,7 @@ public sealed class GetUserRoleConfigsQueryHandler(
         var isATenantManager = await tenantDbContext.TenantManagers
             .AnyAsync(t => t.ApplicationUserId == appUserId, cancellationToken);
 
-        if (isATenantManager && string.IsNullOrEmpty(loggedInUserService.FacilityUrlPrefix))
+        if (isATenantManager && string.IsNullOrEmpty(ctx.FacilityUrlPrefix))
         {
             return new BaseResponse<RoleDto>
             {

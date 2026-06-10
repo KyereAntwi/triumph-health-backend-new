@@ -2,16 +2,16 @@ namespace Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 
 public sealed class GetAnnouncementsQueryHandler(
     ITenantManagementDbContext tenantDbContext,
-    IFacilityManagementDbContext facilityDbContext,
-    ILoggedInUserService loggedInUserService) 
+    IFacilityManagementDbContext facilityDbContext)
     : IQueryHandler<object, IEnumerable<AnnouncementDto>>
 {
     public async Task<BaseResponse<IEnumerable<AnnouncementDto>>> HandleAsync(object query, CancellationToken cancellationToken = default)
     {
+        var ctx = (AppConfigUserContext)query;
         List<AnnouncementDto> announcements = [];
-        
-        if (string.IsNullOrEmpty(loggedInUserService.FacilityId) &&
-            string.IsNullOrEmpty(loggedInUserService.FacilityUrlPrefix))
+
+        if (string.IsNullOrEmpty(ctx.FacilityId) &&
+            string.IsNullOrEmpty(ctx.FacilityUrlPrefix))
             return new BaseResponse<IEnumerable<AnnouncementDto>>
             {
                 IsSuccess = false,

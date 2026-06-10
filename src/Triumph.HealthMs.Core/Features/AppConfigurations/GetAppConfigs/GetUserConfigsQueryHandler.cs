@@ -1,22 +1,22 @@
 namespace Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 
 public sealed class GetUserConfigsQueryHandler(
-    ILoggedInUserService loggedInUserService,
-    IApplicationUserManagementDbContext appUserDbContext) 
+    IApplicationUserManagementDbContext appUserDbContext)
     : IQueryHandler<object, UserInformationDto>
 {
     public async Task<BaseResponse<UserInformationDto>> HandleAsync(object query, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(loggedInUserService.UserId))
+        var ctx = (AppConfigUserContext)query;
+        if (string.IsNullOrEmpty(ctx.UserId))
             return new BaseResponse<UserInformationDto>
             {
                 IsSuccess = true,
                 Data = null
             };
-        
+
         var userQuery = await appUserDbContext
             .ApplicationUsers
-            .Where(u => u.UserId == loggedInUserService.UserId)
+            .Where(u => u.UserId == ctx.UserId)
             .Select(u => new
             {
                 u.Id,

@@ -18,6 +18,15 @@ public class AppConfigurationQueries(
         IQueryHandler<object, IEnumerable<UiStorageItemDto>> uiStorageItemsConfigHandler,
         CancellationToken cancellationToken = default)
     {
+        // Capture all HTTP-context-dependent values before any HybridCache factory calls.
+        // HybridCache runs factories in background tasks where IHttpContextAccessor.HttpContext
+        // can be null (the holder's Context is cleared at request end, affecting all captured contexts).
+        var userCtx = new AppConfigUserContext(
+            loggedInUserService.UserId,
+            loggedInUserService.TenantId,
+            loggedInUserService.FacilityId,
+            loggedInUserService.FacilityUrlPrefix);
+
         var loadUserProfile = context.IsSelected("userInformation");
         var loadTenantProfile = context.IsSelected("tenantInformation");
         var loadFacilityProfile = context.IsSelected("facilityInformation");
@@ -32,8 +41,8 @@ public class AppConfigurationQueries(
         {
             var userConfigs =
                 await cacheService.GetOrCreateAsync(
-                    CacheKeys.UserProfile(loggedInUserService.UserId!),
-                    async token => await userConfigHandler.HandleAsync(new object(), token),
+                    CacheKeys.UserProfile(userCtx.UserId!),
+                    async token => await userConfigHandler.HandleAsync(userCtx, token),
                     absoluteExpiry: TimeSpan.FromDays(1),
                     cancellationToken);
 
@@ -45,10 +54,10 @@ public class AppConfigurationQueries(
 
         if (loadTenantProfile)
         {
-            var tenantConfigs = 
+            var tenantConfigs =
                     await cacheService.GetOrCreateAsync(
-                        CacheKeys.TenantProfile(loggedInUserService.UserId!),
-                        async token => await tenantConfigHandler.HandleAsync(new object(), token),
+                        CacheKeys.TenantProfile(userCtx.UserId!),
+                        async token => await tenantConfigHandler.HandleAsync(userCtx, token),
                         absoluteExpiry: TimeSpan.FromDays(1),
                         cancellationToken);
             
@@ -60,10 +69,10 @@ public class AppConfigurationQueries(
         
         if(loadPermissionsProfile)
         {
-            var permissionsConfigs = 
+            var permissionsConfigs =
                     await cacheService.GetOrCreateAsync(
-                        CacheKeys.PermissionsProfile(loggedInUserService.UserId!),
-                        async token => await permissionsConfigHandler.HandleAsync(new object(), token),
+                        CacheKeys.PermissionsProfile(userCtx.UserId!),
+                        async token => await permissionsConfigHandler.HandleAsync(userCtx, token),
                         absoluteExpiry: TimeSpan.FromDays(1),
                         cancellationToken);
             
@@ -75,10 +84,10 @@ public class AppConfigurationQueries(
 
         if (loadFacilityProfile)
         {
-            var facilityConfigs = 
+            var facilityConfigs =
                     await cacheService.GetOrCreateAsync(
-                        CacheKeys.FacilityProfile(loggedInUserService.UserId!),
-                        async token => await facilityConfigHandler.HandleAsync(new object(), token),
+                        CacheKeys.FacilityProfile(userCtx.UserId!),
+                        async token => await facilityConfigHandler.HandleAsync(userCtx, token),
                         absoluteExpiry: TimeSpan.FromDays(1),
                         cancellationToken);
             
@@ -90,10 +99,10 @@ public class AppConfigurationQueries(
 
         if (loadRoleProfile)
         {
-            var roleConfigs = 
+            var roleConfigs =
                     await cacheService.GetOrCreateAsync(
-                        CacheKeys.RoleProfile(loggedInUserService.UserId!),
-                        async token => await roleConfigHandler.HandleAsync(new object(), token),
+                        CacheKeys.RoleProfile(userCtx.UserId!),
+                        async token => await roleConfigHandler.HandleAsync(userCtx, token),
                         absoluteExpiry: TimeSpan.FromDays(1),
                         cancellationToken);
             
@@ -106,8 +115,8 @@ public class AppConfigurationQueries(
         if (loadAnnouncementProfile)
         {
             var announcementConfigs = await cacheService.GetOrCreateAsync(
-                CacheKeys.AnnouncementProfile(loggedInUserService.UserId!),
-                async token => await announcementConfigHandler.HandleAsync(new object(), token),
+                CacheKeys.AnnouncementProfile(userCtx.UserId!),
+                async token => await announcementConfigHandler.HandleAsync(userCtx, token),
                 absoluteExpiry: TimeSpan.FromDays(1),
                 cancellationToken);
             
@@ -120,8 +129,8 @@ public class AppConfigurationQueries(
         if(loadUiStorageItemsProfile)
         {
             var uiStorageItemsConfigs = await cacheService.GetOrCreateAsync(
-                CacheKeys.UiStorageItemsProfile(loggedInUserService.UserId!),
-                async token => await uiStorageItemsConfigHandler.HandleAsync(new object(), token),
+                CacheKeys.UiStorageItemsProfile(userCtx.UserId!),
+                async token => await uiStorageItemsConfigHandler.HandleAsync(userCtx, token),
                 absoluteExpiry: TimeSpan.FromDays(1),
                 cancellationToken);
 
