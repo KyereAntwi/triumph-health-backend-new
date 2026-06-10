@@ -3,17 +3,18 @@ namespace Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 public sealed class GetTenantConfigsQueryHandler(
     ITenantManagementDbContext dbContext,
     IFacilityManagementDbContext facilityManagementDbContext,
-    IApplicationUserManagementDbContext userDbContext,
-    ILoggedInUserService loggedInUserService) 
+    IApplicationUserManagementDbContext userDbContext)
     : IQueryHandler<object, TenantInformationDto>
 {
     public async Task<BaseResponse<TenantInformationDto>> HandleAsync(object query, CancellationToken cancellationToken = default)
     {
-        if (!string.IsNullOrEmpty(loggedInUserService.TenantId))
+        var ctx = (AppConfigUserContext)query;
+
+        if (!string.IsNullOrEmpty(ctx.TenantId))
         {
             var innerQuery = await dbContext
                 .Tenants
-                .Where(t => t.Id == Guid.Parse(loggedInUserService.TenantId))
+                .Where(t => t.Id == Guid.Parse(ctx.TenantId))
                 .Select(t => new TenantInformationDto(
                     t.Id.ToString(),
                     t.OrganizationTitle,
@@ -29,11 +30,11 @@ public sealed class GetTenantConfigsQueryHandler(
             };
         }
 
-        if (!string.IsNullOrEmpty(loggedInUserService.FacilityUrlPrefix) || !string.IsNullOrEmpty(loggedInUserService.FacilityId))
+        if (!string.IsNullOrEmpty(ctx.FacilityUrlPrefix) || !string.IsNullOrEmpty(ctx.FacilityId))
         {
             var innerQuery = await facilityManagementDbContext.OrganizationalFacilities
-                .Where(f => 
-                    loggedInUserService.FacilityId != null && (f.Id == Guid.Parse(loggedInUserService.FacilityId) || loggedInUserService.FacilityUrlPrefix != null && (f.UrlSuffix == loggedInUserService.FacilityUrlPrefix)))
+                .Where(f =>
+                    ctx.FacilityId != null && (f.Id == Guid.Parse(ctx.FacilityId) || ctx.FacilityUrlPrefix != null && (f.UrlSuffix == ctx.FacilityUrlPrefix)))
                 .Select(f => f.TenantId)
                 .FirstAsync(cancellationToken);
             
@@ -55,7 +56,7 @@ public sealed class GetTenantConfigsQueryHandler(
         
         // check for manager association
         var appUserId = await userDbContext.ApplicationUsers
-            .Where(u => u.UserId == loggedInUserService.UserId)
+            .Where(u => u.UserId == ctx.UserId)
             .Select(u => u.Id)
             .FirstAsync(cancellationToken);
 
