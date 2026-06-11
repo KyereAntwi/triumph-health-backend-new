@@ -14,8 +14,7 @@ public sealed class RenewSubscriptionEndpoint : ICarterModule
             .Produces<BaseResponse<Guid>>(StatusCodes.Status403Forbidden)
             .Produces(StatusCodes.Status500InternalServerError)
             .AddEndpointFilter<TenantIdRequiredFilter>()
-            .AddEndpointFilter<MustBeATenantManagerFilter>()
-            .RequireAuthorization();
+            .AddEndpointFilter<MustBeATenantManagerFilter>();
     }
 
     private static async Task<IResult> Handle(

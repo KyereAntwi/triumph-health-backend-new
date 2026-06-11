@@ -16,8 +16,7 @@ public sealed class AddEmployeeShiftEndpoint : ICarterModule
             .HasApiVersion(1)
             .AddEndpointFilter<FacilityIdRequired>()
             .AddEndpointFilter<RequiresActiveSubscription>()
-            .AddEndpointFilter<MustBeAFacilityManagerFilter>()
-            .RequireAuthorization();
+            .AddEndpointFilter<MustBeAFacilityManagerFilter>();
     }
 
     private static async Task<IResult> Handle(

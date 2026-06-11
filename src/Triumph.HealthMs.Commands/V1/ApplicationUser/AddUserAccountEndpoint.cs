@@ -11,8 +11,7 @@ public sealed class AddUserAccountEndpoint : ICarterModule
             .Produces<BaseResponse<Guid>>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError)
-            .HasApiVersion(1)
-            .RequireAuthorization();
+            .HasApiVersion(1);
     }
 
     private static async Task<IResult> Handle(

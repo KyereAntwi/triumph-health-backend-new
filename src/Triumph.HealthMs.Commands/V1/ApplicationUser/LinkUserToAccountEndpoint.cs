@@ -11,8 +11,7 @@ public sealed class LinkUserToAccountEndpoint : ICarterModule
             .Produces<BaseResponse<Guid>>()
             .Produces<BaseResponse<Guid>>(StatusCodes.Status404NotFound)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status500InternalServerError)
-            .HasApiVersion(1)
-            .RequireAuthorization();
+            .HasApiVersion(1);
     }
 
     private static async Task<IResult> Handle(

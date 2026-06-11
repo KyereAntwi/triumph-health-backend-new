@@ -1,3 +1,5 @@
+using ImTools;
+
 namespace Triumph.HealthMs.Host.Middlewares;
 
 public class UserResourceResolverMiddleware
@@ -18,7 +20,7 @@ public class UserResourceResolverMiddleware
     {
         if (context.User.Identity is not { IsAuthenticated: true } || 
             (context.Request.Method.Equals("POST", StringComparison.CurrentCultureIgnoreCase) &&
-            context.Request.Path.StartsWithSegments("/api/v1/accounts")))
+            string.Equals(context.Request.Path.Value, "/api/v1/accounts", StringComparison.OrdinalIgnoreCase)))
         {
             await _next(context);
             return;
@@ -27,7 +29,7 @@ public class UserResourceResolverMiddleware
         if (!await applicationUserManagementDbContext.ApplicationUsers
                 .AnyAsync(a => a.UserId == loggedInUserService.UserId))
         {
-            if (context.Request.Path.StartsWithSegments("/graphql"))
+            if (string.Equals(context.Request.Path.Value, "/graphql", StringComparison.OrdinalIgnoreCase))
                 throw new GraphQLRequestException("No account registered for user");
             throw new UnauthorizedAccessException("No account registered for user");
         }
@@ -37,7 +39,7 @@ public class UserResourceResolverMiddleware
             if (!await tenantManagementDbContext.Tenants.AnyAsync(t =>
                     t.Id == Guid.Parse(loggedInUserService.TenantId)))
             {
-                if (context.Request.Path.StartsWithSegments("/graphql"))
+                if (string.Equals(context.Request.Path.Value, "/graphql", StringComparison.OrdinalIgnoreCase))
                     throw new GraphQLRequestException("No tenant account found for this tenant");
                 throw new UnauthorizedAccessException("No tenant account found for this tenant");
             }
@@ -48,7 +50,7 @@ public class UserResourceResolverMiddleware
             if (!await facilityManagementDbContext.OrganizationalFacilities.AnyAsync(f =>
                     f.Id == Guid.Parse(loggedInUserService.FacilityId)))
             {
-                if (context.Request.Path.StartsWithSegments("/graphql"))
+                if (string.Equals(context.Request.Path.Value, "/graphql", StringComparison.OrdinalIgnoreCase))
                     throw new GraphQLRequestException("No facility account found for this facility");
                 throw new UnauthorizedAccessException("No facility account found for this facility");
             }

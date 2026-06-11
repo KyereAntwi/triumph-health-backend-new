@@ -15,8 +15,7 @@ public sealed class AddDepartmentEndpoint : ICarterModule
             .HasApiVersion(1)
             .AddEndpointFilter<TenantIdRequiredFilter>()
             .AddEndpointFilter<RequiresActiveSubscription>()
-            .AddEndpointFilter<MustBeATenantManagerFilter>()
-            .RequireAuthorization();
+            .AddEndpointFilter<MustBeATenantManagerFilter>();
     }
 
     private static async Task<IResult> Handle(
