@@ -12,8 +12,7 @@ public sealed class UpdateUserAccountInformationEndpoint : ICarterModule
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status400BadRequest)
-            .HasApiVersion(1)
-            .RequireAuthorization();
+            .HasApiVersion(1);
     }
 
     private static async Task<IResult> Handle([FromBody] UpdateUserInformationCommand command, [FromServices] ICommandHandler<UpdateUserInformationCommand, string> handle)

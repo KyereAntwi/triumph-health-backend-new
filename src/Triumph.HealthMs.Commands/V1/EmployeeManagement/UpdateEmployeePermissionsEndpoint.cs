@@ -16,8 +16,7 @@ public sealed class UpdateEmployeePermissionsEndpoint : ICarterModule
             .HasApiVersion(1)
             .AddEndpointFilter<TenantIdRequiredFilter>()
             .AddEndpointFilter<RequiresActiveSubscription>()
-            .AddEndpointFilter<MustBeAManagerFilter>()
-            .RequireAuthorization();
+            .AddEndpointFilter<MustBeAManagerFilter>();
     }
 
     private static async Task<IResult> Handle(

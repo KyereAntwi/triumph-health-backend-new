@@ -15,8 +15,7 @@ public sealed class AddFacilityAnnouncementEndpoint : ICarterModule
             .HasApiVersion(1)
             .AddEndpointFilter<TenantIdRequiredFilter>()
             .AddEndpointFilter<RequiresActiveSubscription>()
-            .AddEndpointFilter<MustBeAFacilityManagerFilter>()
-            .RequireAuthorization();
+            .AddEndpointFilter<MustBeAFacilityManagerFilter>();
     }
 
     private static async Task<IResult> Handle(

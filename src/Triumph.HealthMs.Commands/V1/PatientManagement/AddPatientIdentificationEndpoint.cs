@@ -16,8 +16,7 @@ public sealed class AddPatientIdentificationEndpoint : ICarterModule
             .HasApiVersion(1)
             .AddEndpointFilter<TenantIdRequiredFilter>()
             .AddEndpointFilter<RequiresActiveSubscription>()
-            .AddEndpointFilter<FacilityIdRequired>()
-            .RequireAuthorization();
+            .AddEndpointFilter<FacilityIdRequired>();
     }
 
     private static async Task<IResult> Handle(

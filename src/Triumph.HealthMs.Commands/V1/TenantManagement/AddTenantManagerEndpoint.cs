@@ -16,8 +16,7 @@ public sealed class AddTenantManagerEndpoint : ICarterModule
             .HasApiVersion(1)
             .AddEndpointFilter<TenantIdRequiredFilter>()
             .AddEndpointFilter<RequiresActiveSubscription>()
-            .AddEndpointFilter<MustBeATenantManagerFilter>()
-            .RequireAuthorization();
+            .AddEndpointFilter<MustBeATenantManagerFilter>();
 
     }
 

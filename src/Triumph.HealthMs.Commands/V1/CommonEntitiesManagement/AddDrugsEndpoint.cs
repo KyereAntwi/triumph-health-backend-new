@@ -11,7 +11,7 @@ public sealed class AddDrugsEndpoint : ICarterModule
             .Produces<BaseResponse<Guid>>(StatusCodes.Status400BadRequest)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status403Forbidden)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status409Conflict)
-            .RequireAuthorization();
+            .HasApiVersion(1);
     }
 
     private static async Task<IResult> Handle(

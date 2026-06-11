@@ -12,8 +12,7 @@ public sealed class AddInvitationLinkEndpoint : ICarterModule
             .Produces<BaseResponse<Guid>>(StatusCodes.Status404NotFound)
             .Produces<BaseResponse<Guid>>(StatusCodes.Status500InternalServerError)
             .HasApiVersion(1)
-            .AddEndpointFilter<MustBeAManagerFilter>()
-            .RequireAuthorization();
+            .AddEndpointFilter<MustBeAManagerFilter>();
     }
 
     private static async Task<IResult> Handle(

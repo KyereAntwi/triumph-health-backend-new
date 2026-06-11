@@ -13,8 +13,7 @@ public sealed class AddTenantAccountEndpoint : ICarterModule
             .Produces(StatusCodes.Status409Conflict)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError)
-            .HasApiVersion(1)
-            .RequireAuthorization();
+            .HasApiVersion(1);
     }
 
     private static async Task<IResult> Handle(

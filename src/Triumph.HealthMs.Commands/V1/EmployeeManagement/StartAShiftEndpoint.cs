@@ -15,8 +15,7 @@ public sealed class StartAShiftEndpoint : ICarterModule
             .Produces(StatusCodes.Status500InternalServerError)
             .HasApiVersion(1)
             .AddEndpointFilter<FacilityIdRequired>()
-            .AddEndpointFilter<RequiresActiveSubscription>()
-            .RequireAuthorization();
+            .AddEndpointFilter<RequiresActiveSubscription>();
     }
 
     private static async Task<IResult> Handle(

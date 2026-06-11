@@ -33,7 +33,9 @@ public static class PipelineStartup
             .Build();
         
         var versionedGroup = app.MapGroup("/api/v{version:apiVersion}")
-            .WithApiVersionSet(versionSet);
+            .WithApiVersionSet(versionSet)
+            .RequireAuthorization();
+        
         versionedGroup.MapCarter();
         
         app.MapGraphQL();

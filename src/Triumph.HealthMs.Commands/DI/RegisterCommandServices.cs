@@ -9,10 +9,11 @@ public static class RegisterCommandServices
         services.AddCarter(null, conf =>
         {
             var modules = typeof(RegisterCommandServices).Assembly.GetTypes()
-                .Where(t => typeof(ICarterModule).IsAssignableFrom(t) && t is { IsInterface: false, IsAbstract: false });
-            
+                .Where(t => typeof(ICarterModule).IsAssignableFrom(t) && t is { IsInterface: false, IsAbstract: false })
+                .ToList();
+        
             var withModuleMethod = typeof(CarterConfigurator).GetMethod(nameof(CarterConfigurator.WithModule))!;
-            
+        
             foreach (var module in modules)
                 withModuleMethod.MakeGenericMethod(module).Invoke(conf, null);
         });
