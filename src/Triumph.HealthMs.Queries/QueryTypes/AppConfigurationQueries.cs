@@ -48,34 +48,34 @@ public class AppConfigurationQueries(
 
             if (!userConfigs.IsSuccess)
                 throw new GraphQLRequestException(userConfigs.Message);
-            
+
             result.UserInformation = userConfigs.Data;
         }
 
         if (loadTenantProfile)
         {
             var tenantConfigs =
-                    await cacheService.GetOrCreateAsync(
-                        CacheKeys.TenantProfile(userCtx.UserId!),
-                        async token => await tenantConfigHandler.HandleAsync(userCtx, token),
-                        absoluteExpiry: TimeSpan.FromDays(1),
-                        cancellationToken);
-            
+                await cacheService.GetOrCreateAsync(
+                    CacheKeys.TenantProfile(userCtx.UserId!),
+                    async token => await tenantConfigHandler.HandleAsync(userCtx, token),
+                    absoluteExpiry: TimeSpan.FromDays(1),
+                    cancellationToken);
+
             if (!tenantConfigs.IsSuccess)
                 throw new GraphQLRequestException(tenantConfigs.Message);
 
             result.TenantInformation = tenantConfigs.Data;
         }
-        
-        if(loadPermissionsProfile)
+
+        if (loadPermissionsProfile)
         {
             var permissionsConfigs =
-                    await cacheService.GetOrCreateAsync(
-                        CacheKeys.PermissionsProfile(userCtx.UserId!),
-                        async token => await permissionsConfigHandler.HandleAsync(userCtx, token),
-                        absoluteExpiry: TimeSpan.FromDays(1),
-                        cancellationToken);
-            
+                await cacheService.GetOrCreateAsync(
+                    CacheKeys.PermissionsProfile(userCtx.UserId!),
+                    async token => await permissionsConfigHandler.HandleAsync(userCtx, token),
+                    absoluteExpiry: TimeSpan.FromDays(1),
+                    cancellationToken);
+
             if (!permissionsConfigs.IsSuccess)
                 throw new GraphQLRequestException(permissionsConfigs.Message);
 
@@ -85,12 +85,12 @@ public class AppConfigurationQueries(
         if (loadFacilityProfile)
         {
             var facilityConfigs =
-                    await cacheService.GetOrCreateAsync(
-                        CacheKeys.FacilityProfile(userCtx.UserId!),
-                        async token => await facilityConfigHandler.HandleAsync(userCtx, token),
-                        absoluteExpiry: TimeSpan.FromDays(1),
-                        cancellationToken);
-            
+                await cacheService.GetOrCreateAsync(
+                    CacheKeys.FacilityProfile(userCtx.UserId!),
+                    async token => await facilityConfigHandler.HandleAsync(userCtx, token),
+                    absoluteExpiry: TimeSpan.FromDays(1),
+                    cancellationToken);
+
             if (!facilityConfigs.IsSuccess)
                 throw new GraphQLRequestException(facilityConfigs.Message);
 
@@ -100,12 +100,12 @@ public class AppConfigurationQueries(
         if (loadRoleProfile)
         {
             var roleConfigs =
-                    await cacheService.GetOrCreateAsync(
-                        CacheKeys.RoleProfile(userCtx.UserId!),
-                        async token => await roleConfigHandler.HandleAsync(userCtx, token),
-                        absoluteExpiry: TimeSpan.FromDays(1),
-                        cancellationToken);
-            
+                await cacheService.GetOrCreateAsync(
+                    CacheKeys.RoleProfile(userCtx.UserId!),
+                    async token => await roleConfigHandler.HandleAsync(userCtx, token),
+                    absoluteExpiry: TimeSpan.FromDays(1),
+                    cancellationToken);
+
             if (!roleConfigs.IsSuccess)
                 throw new GraphQLRequestException(roleConfigs.Message);
 
@@ -119,14 +119,14 @@ public class AppConfigurationQueries(
                 async token => await announcementConfigHandler.HandleAsync(userCtx, token),
                 absoluteExpiry: TimeSpan.FromDays(1),
                 cancellationToken);
-            
+
             if (!announcementConfigs.IsSuccess)
                 throw new GraphQLRequestException(announcementConfigs.Message);
-            
+
             result.Announcements = announcementConfigs.Data!;
         }
-        
-        if(loadUiStorageItemsProfile)
+
+        if (loadUiStorageItemsProfile)
         {
             var uiStorageItemsConfigs = await cacheService.GetOrCreateAsync(
                 CacheKeys.UiStorageItemsProfile(userCtx.UserId!),
