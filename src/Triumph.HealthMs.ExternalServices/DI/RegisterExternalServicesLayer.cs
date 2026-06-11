@@ -69,13 +69,13 @@ public static class RegisterExternalServicesLayer
             }
         });
         
-        if (environment.IsDevelopment())
-        {
-            services.AddMemoryCache();
-            services.AddSingleton<ICacheService, InMemoryCacheService>();
-        }
-        else
-        {
+        // if (environment.IsDevelopment())
+        // {
+        //     services.AddMemoryCache();
+        //     services.AddSingleton<ICacheService, InMemoryCacheService>();
+        // }
+        // else
+        // {
             var redisConnection = configuration.GetConnectionString("Redis") 
                                   ?? throw new InvalidOperationException("Redis connection string is required.");
 
@@ -97,7 +97,7 @@ public static class RegisterExternalServicesLayer
             });
 
             services.AddSingleton<ICacheService, HybridCacheService>();
-        }
+        //}
 
         services.AddHttpClient("resend", client =>
         {

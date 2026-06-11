@@ -13,11 +13,11 @@ public sealed class GetUserRoleConfigsQueryHandler(
         var ctx = (AppConfigUserContext)query;
         var appUserId = await userDbContext.ApplicationUsers
             .Where(u => ctx.UserId == u.UserId)
-            .Select(u => u.Id)
-            .FirstAsync(cancellationToken);
+            .Select(u => (Guid?)u.Id)
+            .FirstOrDefaultAsync(cancellationToken);
 
         var isAPatient = await patientDbContext.Patients
-            .AnyAsync(p => p.ApplicationUserId == appUserId, cancellationToken);
+            .AnyAsync(p => p.ApplicationUserId == appUserId!, cancellationToken);
 
         if (isAPatient)
         {

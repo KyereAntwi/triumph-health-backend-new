@@ -72,7 +72,7 @@ public sealed class HybridCacheService(HybridCache hybridCache, ILogger<HybridCa
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error getting or creating cache entry");
+            logger.LogError(e, "Error getting or creating cache entry, attempting direct factory call");
             return await factory(ct);
         }
     }
