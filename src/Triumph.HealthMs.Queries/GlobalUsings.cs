@@ -2,11 +2,9 @@
 
 global using HotChocolate.AspNetCore;
 global using HotChocolate.Authorization;
-global using HotChocolate.Language;
 global using HotChocolate.Resolvers;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.Hosting;
 global using Triumph.HealthMs.Core.CQRS;
 global using Triumph.HealthMs.Core.Features.AppConfigurations.GetAppConfigs;
 global using Triumph.HealthMs.Core.Features.EmployeeManagement.GetAllEmployees;

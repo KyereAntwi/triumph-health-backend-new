@@ -1,5 +1,6 @@
 // Global using directives
 
+global using System.Threading.RateLimiting;
 global using Asp.Versioning;
 global using Carter;
 global using HotChocolate.AspNetCore;

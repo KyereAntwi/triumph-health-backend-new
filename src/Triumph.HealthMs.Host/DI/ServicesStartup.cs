@@ -75,7 +75,7 @@ public static class ServicesStartup
             builder.Host.UseSerilog((_, _, configuration) =>
             {
                 configuration
-                    .MinimumLevel.Debug()
+                    .MinimumLevel.Information()
                     .WriteTo.Console();
                 
                 // Only configure Sentry if DSN is provided
@@ -87,7 +87,7 @@ public static class ServicesStartup
                         options.MinimumBreadcrumbLevel = LogEventLevel.Debug;
                         options.MinimumEventLevel = LogEventLevel.Warning;
                         options.Dsn = sentryDsn;
-                        options.TracesSampleRate = 1.0;
+                        options.TracesSampleRate = 0.1;
                         options.EnableLogs = true;
                     });
                 }
@@ -117,9 +117,60 @@ public static class ServicesStartup
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("SecurePolicy", policy => 
-                policy.WithOrigins(environment.IsDevelopment() ? "https://localhost:7153" : "triumphhealth.online")
-                    .WithMethods("GET", "POST", "PUT", "DELETE", "PUT")
-                    .WithHeaders("Content-Type", "Authorization", "x-ms-tenant-id", "x-ms-facility-id"));
+                policy
+                    .SetIsOriginAllowed(origin =>
+                    {
+                        if (string.IsNullOrWhiteSpace(origin)) return false;
+
+                        if (environment.IsDevelopment())
+                            return origin.Equals("http://localhost:3000", StringComparison.OrdinalIgnoreCase);
+
+                        var uri = new Uri(origin);
+                        return uri.Host.Equals("triumphhealth.online", StringComparison.OrdinalIgnoreCase) || uri.Host.EndsWith("triumphhealth.online", StringComparison.OrdinalIgnoreCase);
+                    })
+                    .WithMethods("GET", "POST", "PUT", "DELETE")
+                    .WithHeaders("Content-Type", "Authorization", "x-ms-tenant-id", "x-ms-facility-id")
+                    .AllowCredentials());
+        });
+        
+        // rate limiting
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.AddPolicy("DefaultPolicy", context => 
+                RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    AutoReplenishment = true,
+                    PermitLimit = 60,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0
+                }));
+
+            options.OnRejected = async (context, token) =>
+            {
+                context.HttpContext.Response.StatusCode = 429;
+                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                {
+                    await context.HttpContext.Response.WriteAsJsonAsync(new BaseResponse<string>
+                    {
+                        IsSuccess = false,
+                        Status = 429,
+                        Message = "Too many requests.",
+                        Errors = [$"Too many requests. Please try again after {retryAfter.TotalSeconds} second(s)."]
+                    }, cancellationToken: token);
+                }
+                else
+                {
+                    await context.HttpContext.Response.WriteAsJsonAsync(new BaseResponse<string>
+                    {
+                        IsSuccess = false,
+                        Status = 429,
+                        Message = "Too many requests.",
+                        Errors = ["Too many requests. Please try again later."]
+                    }, cancellationToken: token);
+                }
+            };
         });
         
         return builder.Build();

@@ -25,6 +25,8 @@ public static class PipelineStartup
         app.UseMiddleware<UserResourceResolverMiddleware>();
         app.UseAuthorization();
 
+        app.UseRateLimiter();
+
         var versionSet = app.NewApiVersionSet()
             .HasApiVersion(new ApiVersion(1, 0))
             .ReportApiVersions()
