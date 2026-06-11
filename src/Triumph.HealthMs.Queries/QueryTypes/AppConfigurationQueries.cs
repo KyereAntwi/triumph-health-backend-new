@@ -18,9 +18,9 @@ public class AppConfigurationQueries(
         IQueryHandler<object, IEnumerable<UiStorageItemDto>> uiStorageItemsConfigHandler,
         CancellationToken cancellationToken = default)
     {
-        // Capture all HTTP-context-dependent values before any HybridCache factory calls.
-        // HybridCache runs factories in background tasks where IHttpContextAccessor.HttpContext
-        // can be null (the holder's Context is cleared at request end, affecting all captured contexts).
+        if (string.IsNullOrEmpty(loggedInUserService.UserId)) 
+            throw new GraphQLRequestException("User Id missing");
+        
         var userCtx = new AppConfigUserContext(
             loggedInUserService.UserId,
             loggedInUserService.TenantId,

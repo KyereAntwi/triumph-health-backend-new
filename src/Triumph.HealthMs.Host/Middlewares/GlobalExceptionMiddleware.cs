@@ -29,14 +29,16 @@ public sealed class GlobalExceptionMiddleware : IExceptionHandler
                 break;
             
             case GraphQLRequestException ex:
-                statusCode = StatusCodes.Status401Unauthorized;
+                statusCode = StatusCodes.Status200OK;
                 response = new BaseResponse<object>
                 {
-                    Message = "Unauthorized",
+                    IsSuccess = false,
+                    Message = "Error occured",
                     Errors = [ex.Message, $"Trace Id: {traceId}"],
-                    Status = 401
+                    Status = 200
                 };
                 break;
+            
             default:
                 _logger.LogCritical(exception, "An internal error occured at {Timespan}, with TraceId of {TraceId}", DateTimeOffset.UtcNow, traceId);
                 statusCode = StatusCodes.Status500InternalServerError;

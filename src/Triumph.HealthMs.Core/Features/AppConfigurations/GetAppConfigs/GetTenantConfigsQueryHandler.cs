@@ -21,12 +21,12 @@ public sealed class GetTenantConfigsQueryHandler(
                     t.LogoUrl ?? string.Empty,
                     t.Address,
                     t.TenantSubscriptions.Any(ts => ts.IsActive && ts.ExpiresAt >= DateTime.UtcNow)))
-                .FirstAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
 
             return new BaseResponse<TenantInformationDto>
             {
                 IsSuccess = true,
-                Data = innerQuery
+                Data = innerQuery!
             };
         }
 
@@ -36,32 +36,32 @@ public sealed class GetTenantConfigsQueryHandler(
                 .Where(f =>
                     ctx.FacilityId != null && (f.Id == Guid.Parse(ctx.FacilityId) || ctx.FacilityUrlPrefix != null && (f.UrlSuffix == ctx.FacilityUrlPrefix)))
                 .Select(f => f.TenantId)
-                .FirstAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
             
-            var tenant = await dbContext.Tenants.Where(t => t.Id == innerQuery)
+            var tenant = await dbContext.Tenants.Where(t => t.Id == innerQuery!)
                 .Select(t => new TenantInformationDto(
                     t.Id.ToString(),
                     t.OrganizationTitle,
                     t.LogoUrl ?? string.Empty,
                     t.Address,
                     t.TenantSubscriptions.Any(ts => ts.IsActive && ts.ExpiresAt >= DateTime.UtcNow)))
-                .FirstAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
             
             return new BaseResponse<TenantInformationDto>
             {
                 IsSuccess = true,
-                Data = tenant
+                Data = tenant!
             };
         }
         
         // check for manager association
         var appUserId = await userDbContext.ApplicationUsers
             .Where(u => u.UserId == ctx.UserId)
-            .Select(u => u.Id)
-            .FirstAsync(cancellationToken);
+            .Select(u => (Guid?)u.Id)
+            .FirstOrDefaultAsync(cancellationToken);
 
         var managerResult = await dbContext.TenantManagers
-            .Where(tm => tm.ApplicationUserId == appUserId)
+            .Where(tm => tm.ApplicationUserId == appUserId!)
             .Select(tm => tm.Tenant)
             .FirstOrDefaultAsync(cancellationToken);
 

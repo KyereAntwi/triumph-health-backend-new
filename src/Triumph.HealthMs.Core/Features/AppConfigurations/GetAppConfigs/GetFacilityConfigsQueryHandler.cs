@@ -26,12 +26,12 @@ public sealed class GetFacilityConfigsQueryHandler(
                     f.Name,
                     f.LogoUrl ?? string.Empty,
                     f.Address))
-                .FirstAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
 
             return new BaseResponse<FacilityInformationDto>
             {
                 IsSuccess = true,
-                Data = facility
+                Data = facility!
             };
         }
 
