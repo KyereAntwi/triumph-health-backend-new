@@ -7,12 +7,6 @@ public sealed class GetUserConfigsQueryHandler(
     public async Task<BaseResponse<UserInformationDto>> HandleAsync(object query, CancellationToken cancellationToken = default)
     {
         var ctx = (AppConfigUserContext)query;
-        if (string.IsNullOrEmpty(ctx.UserId))
-            return new BaseResponse<UserInformationDto>
-            {
-                IsSuccess = true,
-                Data = null
-            };
 
         var userQuery = await appUserDbContext
             .ApplicationUsers
@@ -27,7 +21,6 @@ public sealed class GetUserConfigsQueryHandler(
                 u.Email,
                 u.Title
             }).FirstOrDefaultAsync(cancellationToken);
-        
 
         var result = new UserInformationDto(
             userQuery!.Title,
