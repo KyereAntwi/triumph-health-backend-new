@@ -17,6 +17,9 @@ public class LoggedInUserService(IHttpContextAccessor httpContextAccessor) : ILo
         {
             var host = HttpContext.Request.Host.Host;
             
+            if(host.Contains("api"))
+                return null;
+            
             if (host.Contains("localhost"))
             {
                 var localhostParts = host.Split('.');
